@@ -1,7 +1,6 @@
 package com.ra.repository.impl;
 
 import com.ra.config.DBConnection;
-import com.ra.model.Invoice;
 import com.ra.model.Product;
 import com.ra.repository.IProductRepository;
 
@@ -15,24 +14,22 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> findAll() {
         List<Product> products = new ArrayList<>();
-        String sql = """
-                SELECT i.id, i.customer_id, i.total_amount, c.name AS customer_name,
-                       i.created_at, i.total_amount
-                FROM invoice i
-                JOIN customer c ON i.customer_id = c.id
-                ORDER BY i.created_at DESC 
-                """;
+        String sql = "SELECT id, name, brand, price, stock FROM product ORDER BY id";
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
              while (rs.next()){
-                 Invoice inv = new Invoice();
-                 products.add();
+                 Product p = new Product();
+                 p.setId(rs.getInt("id")) ;
+                 p.setName(rs.getString("customer_name"));
+                 p.setBrand(rs.getString("brand"));
+                 p.setStock(rs.getInt("stock"));
+                 products.add(p);
              }
 
         } catch (SQLException e){
-            e.printStackTrace();
+            System.out.println("Lỗi khi lấy danh sách sản phẩm: " + e.getMessage());
         }
         return products;
     }
@@ -40,12 +37,29 @@ public class ProductRepository implements IProductRepository {
 
     @Override
     public Product findId(int id) {
-
+        String sql = "SELECT id, name, brand, price, stock FROM product WHERE id = ?" ;
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()){
+                    Product p = new Product();
+                    p.setId(rs.getInt("id"));
+                    p.setName(rs.getString("name"));
+                    p.setBrand(rs.getString("brand"));
+                    p.setPrice(rs.getBigDecimal("price"));
+                    p.setStock(rs.getInt("stock"));
+                    return p;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi");
+        }
         return null;
     }
 
     @Override
-    public boolean insert(Product product) {
+    public boolean save(Product product) {
         String sql = "INSERT INTO product (name, brand, price, stock) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
