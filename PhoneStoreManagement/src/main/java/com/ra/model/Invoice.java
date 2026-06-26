@@ -1,37 +1,54 @@
 package com.ra.model;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Invoice {
     private int id;
     private int customerId;
+    private String customerName;
     private LocalDateTime createdAt;
-    private BigDecimal totalAmount;
+    private double totalAmount;
 
     public Invoice(){}
 
-    public Invoice(int customerId, LocalDateTime createdAt, BigDecimal totalAmount){
+    public Invoice(int customerId, LocalDateTime createdAt, double totalAmount){
         this.customerId = customerId;
         this.createdAt = createdAt;
         this.totalAmount = totalAmount;
     }
 
-    public Invoice(int id, int customerId, LocalDateTime createdAt, BigDecimal totalAmount){
+    public Invoice(int id, int customerId, String customerName, LocalDateTime createdAt, double totalAmount){
         this.id = id;
         this.customerId = customerId;
+        this.customerName = customerName;
         this.createdAt = createdAt;
         this.totalAmount = totalAmount;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
+    public int getId() {
+        return id;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
 
     public int getCustomerId() {
         return customerId;
@@ -49,12 +66,10 @@ public class Invoice {
         this.createdAt = createdAt;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+
+    public void setCustomerName(){
+
     }
 
     @Override

@@ -53,7 +53,7 @@ public class ProductRepository implements IProductRepository {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi");
+            System.out.println("Lỗi khi tìm sản phẩm ID " + id + ": " + e.getMessage());
         }
         return null;
     }
@@ -78,11 +78,35 @@ public class ProductRepository implements IProductRepository {
 
     @Override
     public boolean update(Product product) {
+        String sql = "UPDATE product SET name=?, brand=?, price=?, stock=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getBrand());
+            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setInt(4, product.getStock());
+            stmt.setInt(5, product.getId());
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e){
+            System.out.println("Lỗi không thể cập nhật sản phẩm: " + e.getMessage());
+        }
         return false;
     }
 
     @Override
     public boolean delete(int id) {
+        String sql = "DELETE FROM product WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e){
+            System.out.println("Không thể xóa bảng có ID " + id + ": " + e.getMessage());
+        }
         return false;
     }
 }
