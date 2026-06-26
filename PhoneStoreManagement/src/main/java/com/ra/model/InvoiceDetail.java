@@ -1,27 +1,28 @@
 package com.ra.model;
 
-import java.math.BigDecimal;
-
 public class InvoiceDetail {
     private int id;
     private int invoiceID;
     private int productID;
+    private String productName;
     private int quantity;
-    private BigDecimal unitPrice;
+    private Double unitPrice;
 
-    public InvoiceDetail(){}
+    public InvoiceDetail(){};
 
-    public InvoiceDetail(int invoiceID, int productID, int quantity, BigDecimal unitPrice){
+    public InvoiceDetail(int invoiceID, int productID, String productName, int quantity, Double unitPrice){
         this.invoiceID = invoiceID;
         this.productID = productID;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+        this.productName = productName;
     }
 
-    public InvoiceDetail(int id, int invoiceID, int productID, int quantity, BigDecimal unitPrice){
+    public InvoiceDetail(int id, int invoiceID, int productID, String productName, int quantity, Double unitPrice){
         this.id = id;
         this.invoiceID = invoiceID;
         this.productID = productID;
+        this.productName = productName;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
     }
@@ -46,6 +47,14 @@ public class InvoiceDetail {
         return productID;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
     public void setProductID(int productID) {
         this.productID = productID;
     }
@@ -58,20 +67,21 @@ public class InvoiceDetail {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
     @Override
     public String toString() {
-        return "InvoiceDetails{" +
+        return "InvoiceDetail{" +
                 "id=" + id +
                 ", invoiceID=" + invoiceID +
                 ", productID=" + productID +
+                ", productName='" + productName + '\'' +
                 ", quantity=" + quantity +
                 ", unitPrice=" + unitPrice +
                 '}';

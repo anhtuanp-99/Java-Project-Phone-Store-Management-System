@@ -11,7 +11,7 @@ public class Main {
         DBConnection.testConnection();
 
         // Kiểm tra InvoiceDetail
-        InvoiceDetail detail = new InvoiceDetail(1, 5, 2, new BigDecimal("250.00"));
+        InvoiceDetail detail = new InvoiceDetail();
         System.out.println(detail);
     }
 }

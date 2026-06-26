@@ -18,9 +18,6 @@ public interface IInvoiceRepository {
     // Lưu từng dòng chi tiết vào bảng INVOICE_DETAILS
     boolean saveDetail(InvoiceDetail detail);
 
-    // Tìm hóa đơn theo ID
-    Invoice findById(int id);
-
     // Lấy toàn bộ chi tiết của một hóa đơn theo invoiceId
     List<InvoiceDetail> findDetailsByInvoiceId(int invoiceId);
 
