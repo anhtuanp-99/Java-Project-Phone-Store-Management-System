@@ -6,20 +6,20 @@ public class Product {
     private int id;
     private String name;
     private String brand;
-    private BigDecimal price;
+    private Double price;
     private int stock;
 
     public Product(){}
 
     // constructor có tham số
-    public Product(String name, String  brand, BigDecimal price, int stock){
+    public Product(String name, String  brand, Double price, int stock){
         this.name = name;
         this.brand = brand;
         this.price = price;
         this.stock = stock;
     }
 
-    public Product(int id, String name, String  brand, BigDecimal price, int stock){
+    public Product(int id, String name, String  brand, Double price, int stock){
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -53,11 +53,11 @@ public class Product {
         this.brand = brand;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

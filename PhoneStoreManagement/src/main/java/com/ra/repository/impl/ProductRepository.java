@@ -47,7 +47,7 @@ public class ProductRepository implements IProductRepository {
                     p.setId(rs.getInt("id"));
                     p.setName(rs.getString("name"));
                     p.setBrand(rs.getString("brand"));
-                    p.setPrice(rs.getBigDecimal("price"));
+                    p.setPrice(rs.getDouble("price"));
                     p.setStock(rs.getInt("stock"));
                     return p;
                 }
@@ -66,7 +66,7 @@ public class ProductRepository implements IProductRepository {
 
              stmt.setString(1, product.getName());
              stmt.setString(2, product.getBrand());
-             stmt.setBigDecimal(3, product.getPrice());
+             stmt.setDouble(3, product.getPrice());
              stmt.setInt(4, product.getStock());
 
              return stmt.executeUpdate() > 0; // trả về số dòng bị ảnh hưởng > 0
@@ -84,7 +84,7 @@ public class ProductRepository implements IProductRepository {
 
             stmt.setString(1, product.getName());
             stmt.setString(2, product.getBrand());
-            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setDouble(3, product.getPrice());
             stmt.setInt(4, product.getStock());
             stmt.setInt(5, product.getId());
 

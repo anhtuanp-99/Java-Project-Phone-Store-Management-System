@@ -9,7 +9,7 @@ public interface IProductService {
     List<Product> findAll();
 
     // Tìm sản phẩm theo ID
-    Product findId(int id);
+    Product findById(int id);
 
     // Thêm sản phẩm mới
     boolean save(Product product);
