@@ -22,7 +22,7 @@ public class ProductRepository implements IProductRepository {
              while (rs.next()){
                  Product p = new Product();
                  p.setId(rs.getInt("id")) ;
-                 p.setName(rs.getString("customer_name"));
+                 p.setName(rs.getString("name"));
                  p.setBrand(rs.getString("brand"));
                  p.setStock(rs.getInt("stock"));
                  products.add(p);

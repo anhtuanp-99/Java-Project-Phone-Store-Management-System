@@ -15,8 +15,8 @@ public class CustomerService implements ICustomerService {
 
     private final ICustomerRepository customerRepo;
 
-    public CustomerService(){
-        this.customerRepo = new CustomerRepository();
+    public CustomerService(ICustomerRepository customerRepo){
+        this.customerRepo = customerRepo;
     }
 
 

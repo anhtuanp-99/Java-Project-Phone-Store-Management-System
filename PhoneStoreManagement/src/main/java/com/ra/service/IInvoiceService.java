@@ -12,12 +12,13 @@ public interface IInvoiceService {
     // Lưu hóa đơn mới vào bảng INVOICE
     int save(Invoice invoice);
 
-    // Lưu từng dòng chi tiết vào bảng INVOICE_DETAILS
-    boolean saveDetail(InvoiceDetail detail);
+    // tạo 1 hóa đơn mới
+    boolean createInvoice();
 
-    // Tìm hóa đơn theo ID
-    Invoice findById(int id);
+    // Thống kê doanh thu theo ngày cụ thể
 
-    // Lấy toàn bộ chi tiết của một hóa đơn theo invoiceId
-    List<InvoiceDetail> findDetailsByInvoiceId(int invoiceId);
+    // Thống kê doanh thu theo tháng
+
+    // Thống kê doanh thu theo năm
+
 }
