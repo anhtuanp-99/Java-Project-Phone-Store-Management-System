@@ -106,12 +106,13 @@ public class CustomerRepository implements ICustomerRepository {
 
             stmt.setString(1, customer.getName());
             stmt.setString(2, customer.getPhone());
-            stmt.setString(3 , customer.getAddress());
+            stmt.setString(3, customer.getAddress());
+            stmt.setInt(4, customer.getId());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Lỗi khi cập nhật khách hàng: " + e.getMessage());
-            return false;
         }
+        return false;
     }
 
     @Override

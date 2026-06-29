@@ -36,7 +36,7 @@ public class ProductService implements IProductService {
         if (product.getName() == null || product.getName().isBlank()){
             throw new RuntimeException("Tên sản phẩm không được để trống!");
         }
-        if (product.getPrice() > 0){
+        if (product.getPrice() < 0){
             throw new RuntimeException("Giá sản phẩm không được âm!");
         }
         if (product.getStock() < 0){

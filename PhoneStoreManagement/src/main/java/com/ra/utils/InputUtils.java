@@ -10,7 +10,7 @@ public class InputUtils {
     // Nhập chuỗi từ người dùng bắt buộc không được để trống
     public static String getString(String prompt){
         while (true) {
-            System.out.println(prompt);
+            System.out.print(prompt);
             String input = scanner.nextLine().trim();
 
             if (!input.isEmpty()) {
@@ -22,14 +22,14 @@ public class InputUtils {
 
     // Nhập chuỗi từ người dùng cho phép để trống
     public static String getOptionalString(String prompt) {
-        System.out.println(prompt);
+        System.out.print(prompt);
         return scanner.nextLine().trim();
     }
 
     // Nhập một số nguyên từ người dùng
     public static int getInt(String prompt){
         while (true){
-            System.out.println(prompt);
+            System.out.print(prompt);
             String input = scanner.nextLine().trim();
             try {
                 return Integer.parseInt(input);
@@ -53,7 +53,7 @@ public class InputUtils {
     // Nhập một số thực double
     public static double getDouble(String prompt){
         while (true){
-            System.out.println(prompt);
+            System.out.print(prompt);
             String input = scanner.nextLine();
             try {
                 return Double.parseDouble(input);

@@ -24,6 +24,7 @@ public class ProductRepository implements IProductRepository {
                  p.setId(rs.getInt("id")) ;
                  p.setName(rs.getString("name"));
                  p.setBrand(rs.getString("brand"));
+                 p.setPrice(rs.getDouble("price"));
                  p.setStock(rs.getInt("stock"));
                  products.add(p);
              }
@@ -90,7 +91,7 @@ public class ProductRepository implements IProductRepository {
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e){
-            System.out.println("Lỗi không thể cập nhật sản phẩm: " + e.getMessage());
+            System.out.println("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
         }
         return false;
     }

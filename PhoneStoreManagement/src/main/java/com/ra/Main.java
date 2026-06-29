@@ -4,8 +4,10 @@ import com.ra.config.DBConnection;
 import com.ra.model.Invoice;
 import com.ra.model.InvoiceDetail;
 import com.ra.model.Product;
+import com.ra.presentation.CustomerMenu;
 import com.ra.presentation.ProductMenu;
 import com.ra.service.IProductService;
+import com.ra.service.impl.CustomerService;
 import com.ra.utils.InputUtils;
 
 import java.math.BigDecimal;
@@ -15,6 +17,7 @@ import java.util.List;
 public class Main {
 
     private static final ProductMenu p = new ProductMenu();
+    private static final CustomerMenu m = new CustomerMenu();
 
     public static void main(String[] args) {
         DBConnection.testConnection();
@@ -23,7 +26,14 @@ public class Main {
 //        InvoiceDetail detail = new InvoiceDetail();
 //        System.out.println(detail);
 
-        p.productMenu();
+        while (true) {
+            System.out.println("Lựa chọn: 1. ql sản phẩm | 2. quản lí khách hàng");
+            int choice = InputUtils.getInt("Chọn: ");
+            switch (choice) {
+                case 1 -> p.show();
+                case 2 -> m.show();
+            }
+        }
 
     }
 

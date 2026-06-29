@@ -32,6 +32,7 @@ public class Customer {
         this.address = address;
     }
 
+
     public int getId() {
         return id;
     }
@@ -90,7 +91,14 @@ public class Customer {
 
     @Override
     public String toString() {
-        return String.format("ID: %d | Tên: %-20 | Phone: %-12s | Email: %-30s | Role: %s",
-                id, name, phone, email, role);
+        return "Customer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }

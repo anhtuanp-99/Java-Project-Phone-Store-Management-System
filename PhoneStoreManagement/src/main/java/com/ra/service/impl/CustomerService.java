@@ -1,14 +1,12 @@
 package com.ra.service.impl;
 
-import com.ra.config.DBConnection;
+
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class CustomerService implements ICustomerService {
@@ -18,8 +16,6 @@ public class CustomerService implements ICustomerService {
     public CustomerService(ICustomerRepository customerRepo){
         this.customerRepo = customerRepo;
     }
-
-
 
     @Override
     public List<Customer> findAll() {
