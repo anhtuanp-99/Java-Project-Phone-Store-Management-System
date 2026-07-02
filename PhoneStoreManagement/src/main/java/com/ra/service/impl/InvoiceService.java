@@ -51,7 +51,7 @@ public class InvoiceService implements IInvoiceService {
         }
 
         List<InvoiceDetail> details = new ArrayList<>();
-
+        double totalAmount = 0;
 
         for (int[] item : items) {
             int productId = item[0];
@@ -62,6 +62,7 @@ public class InvoiceService implements IInvoiceService {
                 throw new RuntimeException("Không tìm thấy sản phẩm có ID: " + productId);
             }
 
+            // kiểm tra tồn kho
             if (product.getStock() < quantity) {
                 throw new RuntimeException(
                     String.format("Sản phẩm %s không đủ tồn kho. Còn: %d, Cần: %d", product.getName(),
@@ -69,11 +70,53 @@ public class InvoiceService implements IInvoiceService {
                 );
             }
 
+            InvoiceDetail detail = new InvoiceDetail();
+            detail.setProductID(productId);
+            detail.setProductName(product.getName());
+            detail.setQuantity(quantity);
+            detail.setUnitPrice(product.getPrice());
+            details.add(detail);
 
+            totalAmount = totalAmount + quantity * product.getPrice();
         }
 
+        // lưu hóa đơn và lấy về id
+        Invoice invoice = new Invoice();
+        invoice.setCustomerId(customerId);
+        invoice.setTotalAmount(totalAmount);
 
-        return false;
+        int invoiceId = invoiceRepo.save(invoice);
+
+        if (invoiceId == -1) {
+            throw new RuntimeException("Lỗi khi tạo hóa đơn!");
+        }
+
+        // lưu chi tiết và trừ stock
+        for (InvoiceDetail detail : details) {
+            detail.setInvoiceID(invoiceId);
+
+            invoiceRepo.saveDetail(detail);
+
+            // stock mới = stock cũ - số lượng mua
+            Product product = productRepo.findId(detail.getProductID());
+            productRepo.updateStock(detail.getProductID(), product.getStock() - detail.getQuantity());
+        }
+        return true;
+    }
+
+    @Override
+    public double revenueByDay(int day, int month, int year) {
+        return
+    }
+
+    @Override
+    public double revenueByMonth(int month, int year) {
+        return
+    }
+
+    @Override
+    public double revenueByYear(int year) {
+        return
     }
 
 
