@@ -14,8 +14,8 @@ public interface ICustomerService {
     // Tìm theo email - dùng khi đăng nhập hoặc kiểm tra email trùng
     Customer findByEmail(String email);
 
-//    // Đăng nhập kiểm tra email + password
-//    Customer login(String email, String password);
+    // Đăng nhập kiểm tra email + password
+    Customer login(String email, String password);
 
     // Thêm khách hàng mới
     boolean save(Customer customer);

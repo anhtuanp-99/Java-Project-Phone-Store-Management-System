@@ -19,6 +19,7 @@ public class CustomerRepository implements ICustomerRepository {
         c.setName(rs.getString("name"));
         c.setPhone(rs.getString("phone"));
         c.setEmail(rs.getString("email"));
+        c.setPassword(rs.getString("password"));
         c.setRole(rs.getString("role"));
         c.setAddress(rs.getString("address"));
         return c;
@@ -26,7 +27,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        String sql = "SELECT id, name , phone, email, role, address FROM customer ORDER BY id";
+        String sql = "SELECT * FROM customer WHERE role = 'CUSTOMER' ORDER BY id";
         List<Customer> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -44,7 +45,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public Customer findById(int id) {
-        String sql = "SELECT id, name, phone, email, role, address FROM customer WHERE id = ?";
+        String sql = "SELECT * FROM customer WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -60,7 +61,7 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public Customer findByEmail(String email) {
-        String sql = "SELECT id, name, phone, email, role, address FROM customer WHERE email = ?";
+        String sql = "SELECT * FROM customer WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -108,7 +109,9 @@ public class CustomerRepository implements ICustomerRepository {
             stmt.setString(2, customer.getPhone());
             stmt.setString(3, customer.getAddress());
             stmt.setInt(4, customer.getId());
+
             return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             System.out.println("Lỗi khi cập nhật khách hàng: " + e.getMessage());
         }

@@ -6,6 +6,7 @@ import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IProductService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductService implements IProductService {
 
@@ -63,4 +64,28 @@ public class ProductService implements IProductService {
         findById(id); // kiểm tra sản phẩm tồn tại trước khi xóa
         return productRepo.delete(id);
     }
+
+    @Override
+    public List<Product> searchByNameOrBrand(String keyword) {
+        String lowerKeyWord = keyword.toLowerCase().trim();
+
+        return productRepo.findAll()
+                .stream()
+                .filter(p -> p.getName().toLowerCase().contains(lowerKeyWord) ||
+                        p.getBrand().toLowerCase().contains(lowerKeyWord))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> filterByPriceRange(double minPrice, double maxPrice) {
+        if (minPrice > maxPrice) {
+            throw new RuntimeException("Giá tối thiểu không được lớn hơn giá tối đa!");
+        }
+
+        return productRepo.findAll()
+                .stream()
+                .filter(p -> p.getPrice() >= minPrice && p.getPrice() <= maxPrice)
+                .collect(Collectors.toList());
+    }
+
 }

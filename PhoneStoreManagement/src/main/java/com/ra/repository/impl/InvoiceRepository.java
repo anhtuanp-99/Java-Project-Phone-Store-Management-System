@@ -32,13 +32,46 @@ public class InvoiceRepository implements IInvoiceRepository {
                 inv.setCustomerId(rs.getInt("customer_id"));
                 inv.setCustomerName(rs.getString("customer_name"));
                 inv.setTotalAmount(rs.getDouble("total_amount"));
-                inv.setCreatedAt(rs.getTimestamp("created_ad").toLocalDateTime());
+                inv.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 list.add(inv);
             }
         } catch (SQLException e){
             System.out.println("Lỗi khi lấy danh sách hóa đơn: " + e.getMessage());
         }
         return list;
+    }
+
+    @Override
+    public Invoice findById(int id){
+        String sql = """
+                SELECT i.id, i.customer_id, c.name AS customer_name,
+                       i.created_at, i.total_amount
+                FROM invoice i 
+                JOIN customer c ON c.id = i.customer_id
+                WHERE i.id = ?;           
+                """;
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ){
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()) {
+                Invoice inv = new Invoice();
+                    inv.setId(rs.getInt("id"));
+                    inv.setCustomerId(rs.getInt("customer_id"));
+                    inv.setCustomerName("customer_name");
+                    inv.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    inv.setTotalAmount(rs.getDouble("total_amount"));
+
+                    return inv;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi tìm hóa đơn có ID " + id + ": " + e.getMessage());
+        }
+        return null;
     }
 
     @Override

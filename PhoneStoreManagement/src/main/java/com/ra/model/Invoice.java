@@ -67,11 +67,6 @@ public class Invoice {
     }
 
 
-
-    public void setCustomerName(){
-
-    }
-
     @Override
     public String toString() {
         return "Invoice{" +

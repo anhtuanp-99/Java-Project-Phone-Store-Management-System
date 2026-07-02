@@ -1,7 +1,6 @@
 package com.ra.presentation;
 
 import com.ra.model.Customer;
-import com.ra.repository.ICustomerRepository;
 import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
 import com.ra.service.impl.CustomerService;

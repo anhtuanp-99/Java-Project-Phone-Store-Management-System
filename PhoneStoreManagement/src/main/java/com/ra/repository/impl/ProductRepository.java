@@ -110,4 +110,22 @@ public class ProductRepository implements IProductRepository {
         }
         return false;
     }
+
+    @Override
+    public boolean updateStock(int productId, int newStock){
+        String sql = "UPDATE product SET stock = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setInt(1, newStock);
+            stmt.setInt(2, productId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi cập nhật tồn kho: " + e.getMessage());
+            return false;
+        }
+    }
+
 }

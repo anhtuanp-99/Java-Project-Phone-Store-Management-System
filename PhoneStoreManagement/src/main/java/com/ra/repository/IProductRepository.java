@@ -21,6 +21,8 @@ public interface IProductRepository {
 
     // Xóa sản phẩm
     boolean delete(int id);
-//    boolean updateStock(int productId, int newStock);
+
+    // Cập nhật riêng số lượng tồn kho (dùng khi tạo hóa đơn)
+    boolean updateStock(int productId, int newStock);
 
 }

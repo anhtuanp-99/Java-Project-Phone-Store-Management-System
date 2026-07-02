@@ -20,9 +20,9 @@ public interface IProductService {
     // Xóa sản phẩm
     boolean delete(int id);
 
-//    // Tìm kiếm theo tên hoặc theo hãng
-//    List<Product> searchByNameOrBrand(String keyword);
-//
-//    // Lọc theo khoảng giá
-//    List<Product> filterByPriceRange(double minPrice, double maxPrice);
+    // Tìm kiếm theo tên hoặc theo hãng
+    List<Product> searchByNameOrBrand(String keyword);
+
+    // Lọc theo khoảng giá
+    List<Product> filterByPriceRange(double minPrice, double maxPrice);
 }

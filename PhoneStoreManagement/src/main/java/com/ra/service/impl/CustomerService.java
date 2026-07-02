@@ -5,6 +5,7 @@ import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 import java.util.List;
@@ -32,6 +33,21 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
+    public Customer login(String email, String password) {
+        Customer customer = customerRepo.findByEmail(email);
+
+        if (customer == null) {
+            return null;
+        }
+
+        // so sánh password đã nhập với password đã hash trong DB
+        if (BCrypt.checkpw(password, customer.getPassword())){
+            return customer;
+        }
+        return null;
+    }
+
+    @Override
     public Customer findByEmail(String email) {
         Customer customer = customerRepo.findByEmail(email);
         if (customer == null) {
@@ -51,6 +67,11 @@ public class CustomerService implements ICustomerService {
         if (customerRepo.findByEmail(customer.getEmail()) != null) {
             throw new RuntimeException("Email đã tồn tại trong hệ thống");
         }
+
+        // hash password trước khi lưu xuống Database
+        String hashedPassword = BCrypt.hashpw(customer.getPassword(), BCrypt.gensalt());
+        customer.setPassword(hashedPassword);
+        customer.setRole("CUSTOMER");
         return customerRepo.save(customer);
     }
 
