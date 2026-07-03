@@ -120,8 +120,35 @@ public class ProductMenu {
     }
 
     private void searchProduct() {
+        System.out.println("\n--- Tìm điện thoại theo tên sản phẩm hoặc tên nhãn hàng ---");
+        String keyword = InputUtils.getString("Nhập tên hoặc hãng cần tìm: ");
+
+        List<Product> results = productService.searchByNameOrBrand(keyword);
+
+        if (results.isEmpty()) {
+            System.out.println("Không tìm thấy sản phẩm liên quan đến '" + keyword + "'");
+        } else {
+            System.out.println("\nKết quả tìm kiếm (" + results.size() + " sản phẩm): ");
+            results.forEach(System.out::println);
+        }
+
     }
 
     private void filterByPrice() {
+        System.out.println("\n --- Tìm kiếm điện thoại theo khoảng giá cố định ---");
+        double minPrice = InputUtils.getDouble("Giá tối thiểu (USD): ");
+        double maxPrice = InputUtils.getDouble("Giá tối đa (USD): ");
+
+        try {
+            List<Product> results = productService.filterByPriceRange(minPrice, maxPrice);
+            if (results.isEmpty()) {
+                System.out.println("Không có sản phẩm nào trong khoảng giá này!");
+            } else {
+                System.out.println("\nKết quả tìm kiếm (" + results.size() + " sản phẩm): ");
+                results.forEach(System.out::println);
+            }
+        } catch (RuntimeException e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
     }
 }

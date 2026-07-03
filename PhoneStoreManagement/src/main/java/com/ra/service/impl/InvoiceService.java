@@ -12,8 +12,10 @@ import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.PrimitiveIterator;
+import java.util.stream.Collectors;
 
 public class InvoiceService implements IInvoiceService {
 
@@ -105,19 +107,47 @@ public class InvoiceService implements IInvoiceService {
     }
 
     @Override
+    public List<Invoice> searchByCustomerName(String name) {
+        String lowerName = name.toLowerCase().trim();
+        return invoiceRepo.findAll()
+                .stream().filter(inv -> inv.getCustomerName()
+                        .toLowerCase()
+                        .contains(lowerName)).collect(Collectors.toList());
+    }
+
+    @Override
     public double revenueByDay(int day, int month, int year) {
-        return
+        return invoiceRepo.findAll()
+                .stream()
+                .filter(inv -> {
+                    var date = inv.getCreatedAt();
+                    return date.getDayOfMonth() == day
+                        && date.getMonthValue() == month
+                        && date.getYear() == year;
+                })
+                .mapToDouble(Invoice::getTotalAmount)
+                .sum();
     }
 
     @Override
     public double revenueByMonth(int month, int year) {
-        return
+        return invoiceRepo.findAll()
+                .stream()
+                .filter(inv ->
+                                inv.getCreatedAt().getMonthValue() == month &&
+                                inv.getCreatedAt().getYear() == year
+                )
+                .mapToDouble(Invoice::getTotalAmount)
+                .sum();
     }
 
     @Override
     public double revenueByYear(int year) {
-        return
+        return invoiceRepo.findAll()
+                .stream()
+                .filter(inv -> inv.getCreatedAt().getYear() == year)
+                .mapToDouble(Invoice::getTotalAmount)
+                .sum();
     }
-
 
 }

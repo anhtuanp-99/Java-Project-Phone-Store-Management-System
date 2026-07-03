@@ -15,10 +15,13 @@ public interface IInvoiceService {
     // tạo 1 hóa đơn mới (kiểm tra tồn kho, tính tổng tiền và lưu vào 2 bảng)
     boolean createInvoice(int cutomerId, List<int[]> items);
 
-    // Thống kê doanh thu theo ngày cụ thể
+    // Tìm kiếm hóa đơn theo tên khách hàng
+    List<Invoice> searchByCustomerName(String name);
+
+    // Thống kê doanh thu theo ngày tháng năm cụ thể
     double revenueByDay(int day, int month, int year);
 
-    // Thống kê doanh thu theo tháng
+    // Thống kê doanh thu theo tháng + năm
     double revenueByMonth(int month, int year);
 
     // Thống kê doanh thu theo năm
