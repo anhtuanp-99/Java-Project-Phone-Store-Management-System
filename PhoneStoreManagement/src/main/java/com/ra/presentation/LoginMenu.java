@@ -2,14 +2,15 @@ package com.ra.presentation;
 
 import com.ra.model.Customer;
 import com.ra.service.ICustomerService;
+import com.ra.service.impl.CustomerService;
 import com.ra.utils.InputUtils;
 
 public class LoginMenu {
 
     private final ICustomerService customerService;
 
-    public LoginMenu(ICustomerService customerService) {
-        this.customerService = customerService;
+    public LoginMenu() {
+        this.customerService = new CustomerService();
     }
 
     public Customer show() {
@@ -21,7 +22,7 @@ public class LoginMenu {
             System.out.println("|   [3] Thoát                              |");
             System.out.println("============================================");
 
-            int choice = InputUtils.getIntRange("Chọn chức năng", 1, 3);
+            int choice = InputUtils.getIntRange("Chọn chức năng: ", 1, 3);
 
             switch (choice) {
                 case 1 -> {

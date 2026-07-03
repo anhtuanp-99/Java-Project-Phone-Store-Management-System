@@ -12,7 +12,7 @@ public class CustomerMenu {
     private final ICustomerService customerService;
 
     public CustomerMenu() {
-        this.customerService = new CustomerService(new CustomerRepository());
+        this.customerService = new CustomerService();
     }
 
     public void show(){

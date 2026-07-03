@@ -1,5 +1,6 @@
 package com.ra.presentation;
 
+import com.ra.model.Customer;
 import com.ra.utils.InputUtils;
 
 public class MainMenu {
@@ -7,13 +8,14 @@ public class MainMenu {
     private final CustomerMenu customerMenu = new CustomerMenu();
     private final InvoiceMenu invoiceMenu = new InvoiceMenu();
 
-    public void show() {
+    public void show(Customer loggedInAdmin) {
         while (true) {
             System.out.println("\n========== PHẦN MỀM QUẢN LÍ ==========");
-            System.out.println("    1. Quản lí Sản phẩm");
-            System.out.println("    2. Quản lí Khách hàng");
-            System.out.println("    3. Quản lí hóa đơn");
-            System.out.println("    4. Đăng xuất");
+            System.out.println("Xin chào: " + loggedInAdmin.getName());
+            System.out.println("  1. Quản lí Sản phẩm");
+            System.out.println("  2. Quản lí Khách hàng");
+            System.out.println("  3. Quản lí hóa đơn");
+            System.out.println("  4. Đăng xuất");
             System.out.println("=======================================");
 
             int choice = InputUtils.getIntRange("Chọn: ", 1, 4);
