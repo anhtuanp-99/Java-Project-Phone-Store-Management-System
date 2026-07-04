@@ -91,14 +91,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", address='" + address + '\'' +
-                '}';
+        return String.format("ID: %d | Tên: %-15s | Phone: %s | Email: %-30s | Role: %s",
+                id, name, phone, email, role);
     }
 }

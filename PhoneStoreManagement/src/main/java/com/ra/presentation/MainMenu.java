@@ -12,19 +12,19 @@ public class MainMenu {
         while (true) {
             System.out.println("\n========== PHẦN MỀM QUẢN LÍ ==========");
             System.out.println("Xin chào: " + loggedInAdmin.getName());
-            System.out.println("  1. Quản lí Sản phẩm");
-            System.out.println("  2. Quản lí Khách hàng");
-            System.out.println("  3. Quản lí hóa đơn");
-            System.out.println("  4. Đăng xuất");
+            System.out.println("  [1] Quản lí Sản phẩm");
+            System.out.println("  [2] Quản lí Khách hàng");
+            System.out.println("  [3] Quản lí hóa đơn");
+            System.out.println("  [0] Đăng xuất");
             System.out.println("=======================================");
 
-            int choice = InputUtils.getIntRange("Chọn: ", 1, 4);
+            int choice = InputUtils.getIntRange("Chọn: ", 0, 3);
 
             switch (choice) {
                 case 1 -> productMenu.show();
                 case 2 -> customerMenu.show();
                 case 3 -> invoiceMenu.show();
-                case 4 -> {
+                case 0 -> {
                     System.out.println("Đã đăng xuất.");
                     return; } // Quay về login menu
             }

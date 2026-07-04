@@ -12,9 +12,7 @@ import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.PrimitiveIterator;
 import java.util.stream.Collectors;
 
 public class InvoiceService implements IInvoiceService {

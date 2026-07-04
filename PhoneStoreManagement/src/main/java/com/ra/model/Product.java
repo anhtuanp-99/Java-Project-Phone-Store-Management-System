@@ -1,7 +1,5 @@
 package com.ra.model;
 
-import java.math.BigDecimal;
-
 public class Product {
     private int id;
     private String name;
@@ -71,12 +69,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", brand='" + brand + '\'' +
-                ", price=" + price +
-                ", stock=" + stock +
-                '}';
+        return String.format("ID: %d | %-30s | Hãng: %-10s | Giá: %,.0f USD | Tồn kho: %d",
+                id, name, brand, price, stock);
     }
 }

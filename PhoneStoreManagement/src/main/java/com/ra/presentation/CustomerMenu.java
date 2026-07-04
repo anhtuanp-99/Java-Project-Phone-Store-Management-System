@@ -1,7 +1,6 @@
 package com.ra.presentation;
 
 import com.ra.model.Customer;
-import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
 import com.ra.service.impl.CustomerService;
 import com.ra.utils.InputUtils;
@@ -48,7 +47,7 @@ public class CustomerMenu {
 
     private void addCustomer() {
         Customer customer = new Customer();
-        System.out.println("--- Thêm mới khách hàng ---");
+        System.out.println("\n--- Thêm mới khách hàng ---");
         customer.setName(InputUtils.getString("Họ tên: "));
         customer.setPhone(InputUtils.getOptionalString("Số điện thoại: "));
         customer.setEmail(InputUtils.getString("Email: "));
@@ -68,7 +67,7 @@ public class CustomerMenu {
         int id = InputUtils.getInt("Nhập ID khách hàng cần sửa: ");
         try {
             Customer customer = customerService.findById(id);
-            System.out.println("-- Thông tin khách hàng hiện tại --");
+            System.out.println("\n-- Thông tin khách hàng hiện tại --");
             System.out.println(customer);
             String name = InputUtils.getOptionalString("Họ tên mới (Enter để giữ nguyên): ");
             String phone = InputUtils.getOptionalString("Số điện thoại mới (Enter để giữ nguyên): ");
@@ -79,7 +78,7 @@ public class CustomerMenu {
             if (!address.isEmpty()) customer.setAddress(address);
 
             if (customerService.update(customer)) {
-                System.out.println("Cập nhật thành công!");
+                System.out.println("-> Cập nhật thành công!");
             }
         } catch (RuntimeException e) {
             System.out.println("Lỗi: " + e.getMessage());
@@ -95,7 +94,7 @@ public class CustomerMenu {
             System.out.println("Khách hàng tìm thấy: " + customer);
             if (InputUtils.getConfirmation("Bạn có chắc muốn xóa khách hàng này?")) {
                 if (customerService.delete(id)) {
-                    System.out.println("Đã xóa sản phẩm");
+                    System.out.println("-> Đã xóa sản phẩm");
                 }
             } else {
                 System.out.println("Đã hủy thao tác xóa");

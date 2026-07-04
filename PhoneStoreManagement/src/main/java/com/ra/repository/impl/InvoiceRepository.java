@@ -76,7 +76,11 @@ public class InvoiceRepository implements IInvoiceRepository {
 
     @Override
     public int save(Invoice invoice) {
-        String sql = "INSERT INTO invoice(customer_id, total_amount) VALUES (?, ?)";
+        /*
+         * RETURNING id → PostgreSQL trả về ID vừa được SERIAL tạo ra.
+         * Cần ID này để lưu tiếp các dòng INVOICE_DETAILS.
+         */
+        String sql = "INSERT INTO invoice (customer_id, total_amount) VALUES (?, ?) RETURNING id";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 

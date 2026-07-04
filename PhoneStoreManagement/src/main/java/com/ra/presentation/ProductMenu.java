@@ -18,13 +18,13 @@ public class ProductMenu {
     public void show() {
         while (true) {
             System.out.println("\n--- Quản lí sản phẩm ---");
-            System.out.println("1. Xem danh sách");
-            System.out.println("2. Thêm sản phẩm");
-            System.out.println("3. Chỉnh sửa sản phẩm");
-            System.out.println("4. Xóa sản phẩm");
-            System.out.println("5. Tìm kiếm theo tên/hãng");
-            System.out.println("6. Lọc theo khoảng giá");
-            System.out.println("0. Quay lại Menu chính");
+            System.out.println("[1] Xem danh sách");
+            System.out.println("[2] Thêm sản phẩm");
+            System.out.println("[3] Chỉnh sửa sản phẩm");
+            System.out.println("[4] Xóa sản phẩm");
+            System.out.println("[5] Tìm kiếm theo tên/hãng");
+            System.out.println("[6] Lọc theo khoảng giá");
+            System.out.println("[0] Quay lại");
 
             int choice = InputUtils.getIntRange("Chọn: ", 0, 6);
 

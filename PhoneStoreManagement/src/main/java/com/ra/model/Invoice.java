@@ -1,6 +1,5 @@
 package com.ra.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Invoice {
@@ -36,7 +35,6 @@ public class Invoice {
     public String getCustomerName() {
         return customerName;
     }
-
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
@@ -44,16 +42,13 @@ public class Invoice {
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
-
     public double getTotalAmount() {
         return totalAmount;
     }
 
-
     public int getCustomerId() {
         return customerId;
     }
-
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
@@ -61,7 +56,6 @@ public class Invoice {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -69,11 +63,7 @@ public class Invoice {
 
     @Override
     public String toString() {
-        return "Invoice{" +
-                "id=" + id +
-                ", customerId=" + customerId +
-                ", createdAt=" + createdAt +
-                ", totalAmount=" + totalAmount +
-                '}';
+        return String.format("HD#%d | KH: %-20s | Ngày: %s | Tổng tiền: %,.0f USD",
+                id, customerName, createdAt.toLocalDate(), totalAmount);
     }
 }

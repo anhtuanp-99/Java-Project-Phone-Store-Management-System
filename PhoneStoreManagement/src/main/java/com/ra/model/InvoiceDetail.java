@@ -77,13 +77,7 @@ public class InvoiceDetail {
 
     @Override
     public String toString() {
-        return "InvoiceDetail{" +
-                "id=" + id +
-                ", invoiceID=" + invoiceID +
-                ", productID=" + productID +
-                ", productName='" + productName + '\'' +
-                ", quantity=" + quantity +
-                ", unitPrice=" + unitPrice +
-                '}';
+        return String.format("%-30s | SL: %d | Đơn giá: %,.0f USD | Thành tiền: %,.0f USD",
+                productName, quantity, unitPrice, unitPrice * quantity);
     }
 }

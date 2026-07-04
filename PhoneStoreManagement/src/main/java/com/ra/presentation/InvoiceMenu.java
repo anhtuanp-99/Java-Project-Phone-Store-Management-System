@@ -19,11 +19,11 @@ public class InvoiceMenu {
     public void show() {
         while (true) {
             System.out.println("\n--- Quản lí hóa đơn ---");
-            System.out.println("1. Xem danh sách hóa đơn");
-            System.out.println("2. Tạo hóa đơn bán hàng");
-            System.out.println("3. Tìm kiếm hóa đơn theo tên khách hàng");
-            System.out.println("4. Thống kê doanh thu");
-            System.out.println("0. Quay lại");
+            System.out.println("[1] Xem danh sách hóa đơn");
+            System.out.println("[2] Tạo hóa đơn bán hàng");
+            System.out.println("[3] Tìm kiếm hóa đơn theo tên khách hàng");
+            System.out.println("[4] Thống kê doanh thu");
+            System.out.println("[0] Quay lại");
 
             int choice =  InputUtils.getIntRange("Chọn: ", 0, 4);
 
@@ -48,14 +48,14 @@ public class InvoiceMenu {
     }
 
     private void createInvoice() {
-        System.out.println("-- Tạo hóa đơn bán hàng --");
+        System.out.println("\n-- Tạo hóa đơn bán hàng --");
         int customerId = InputUtils.getInt("Nhập ID khách hàng: ");
 
         List<int[]> items = new ArrayList<>(); // danh sách sản phẩm muốn mua
 
         while (true) {
-            System.out.println("Thêm sản phẩm vào hóa đơn:");
-            int productId = InputUtils.getInt("Nhập ID sản phẩm cần mua ( 0 = kết thúc): ");
+            System.out.println("\nThêm sản phẩm vào hóa đơn:");
+            int productId = InputUtils.getInt("ID sản phẩm ( 0 = kết thúc): ");
             if (productId == 0) break;
 
             int quantity = InputUtils.getInt("Số lượng: ");
@@ -65,17 +65,17 @@ public class InvoiceMenu {
             }
 
             items.add(new int[] {productId, quantity});
-            System.out.println("Đã thêm sản phẩm vào hóa đơn");
+            System.out.println("-> Đã thêm sản phẩm vào hóa đơn");
         }
 
         if (items.isEmpty()) {
-            System.out.println("Hóa đơn trống, đã hủy tạo hóa đơn!");
+            System.out.println("-> Hóa đơn trống, đã hủy tạo hóa đơn!");
             return;
         }
 
         try {
             if (invoiceService.createInvoice(customerId, items)){
-                System.out.println("Tạo hóa đơn thành công");
+                System.out.println("-> Tạo hóa đơn thành công");
             }
         } catch (RuntimeException e) {
             System.out.println("Lỗi: " + e.getMessage());
@@ -84,13 +84,62 @@ public class InvoiceMenu {
     }
 
     private void searchInvoice() {
+        System.out.println("\n-- Tìm kiếm hóa đơn theo tên khách hàng --");
+        String name = InputUtils.getString("Nhập tên khách hàng cần tìm: ");
+        List<Invoice> results = invoiceService.searchByCustomerName(name);
 
+        if (results.isEmpty()) {
+            System.out.println("-> Không tìm thấy hóa đơn nào có tên: " + name);
+            return;
+        }
+
+        System.out.println("\n-- Kết quả tìm kiếm --");
+        System.out.println("    Tìm thấy: " + results.size() + " hóa đơn");
+        results.forEach(System.out::println);
     }
 
     private void showRevenue() {
+        while (true) {
+            System.out.println("\n-- Thống kê doanh thu --");
+            System.out.println("1. Theo ngày");
+            System.out.println("2. Theo tháng");
+            System.out.println("3. Theo năm");
+            System.out.println("0. Quay lại");
 
+            int choice = InputUtils.getIntRange("Chọn: ", 0, 3);
+
+            switch (choice) {
+                case 1 -> {
+                    int day = InputUtils.getIntRange("Chọn ngày (1-31): ", 1, 31);
+                    int month = InputUtils.getIntRange("Chọn tháng (1-12): ", 1, 12);
+                    int year = InputUtils.getInt("Chọn năm: ");
+
+                    double revenue = invoiceService.revenueByDay(day, month, year);
+
+                    System.out.printf("Doanh thu ngày %d/%d/%d: %,.0f USD %n", day, month, year, revenue);
+
+                }
+
+                case 2 -> {
+                    int month = InputUtils.getIntRange("Chọn tháng (1-12): ", 1, 12);
+                    int year = InputUtils.getInt("Chọn năm: ");
+
+                    double revenue = invoiceService.revenueByMonth(month, year);
+
+                    System.out.printf("Doanh thu tháng %d/%d: %,.0f USD %n", month, year, revenue);
+                }
+
+                case 3 -> {
+                    int year = InputUtils.getInt("Chọn năm: ");
+
+                    double revenue = invoiceService.revenueByYear(year);
+
+                    System.out.printf("Doanh thu năm %d: %,.0f USD %n", year, revenue);
+                }
+
+                case 0 -> { return; }
+            }
+        }
     }
-
-
 
 }
