@@ -1,6 +1,8 @@
 package com.ra.presentation;
 
 import com.ra.model.Customer;
+import com.ra.repository.ICustomerRepository;
+import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
 import com.ra.service.impl.CustomerService;
 import com.ra.utils.InputUtils;
@@ -10,7 +12,8 @@ public class LoginMenu {
     private final ICustomerService customerService;
 
     public LoginMenu() {
-        this.customerService = new CustomerService();
+        ICustomerRepository customerRepo = new CustomerRepository();
+        this.customerService = new CustomerService(customerRepo);
     }
 
     public Customer show() {

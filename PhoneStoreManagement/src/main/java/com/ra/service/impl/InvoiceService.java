@@ -10,6 +10,7 @@ import com.ra.repository.impl.CustomerRepository;
 import com.ra.repository.impl.InvoiceRepository;
 import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
+import com.ra.service.IProductService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,12 @@ public class InvoiceService implements IInvoiceService {
     private final ICustomerRepository customerRepo;
 
 
-    public InvoiceService() {
-        this.invoiceRepo = new InvoiceRepository();
-        this.productRepo = new ProductRepository();
-        this.customerRepo = new CustomerRepository();
+    public InvoiceService(ICustomerRepository customerRepo,
+                          IProductRepository productRepo,
+                          IInvoiceRepository invoiceRepo) {
+        this.invoiceRepo = invoiceRepo;
+        this.productRepo = productRepo;
+        this.customerRepo = customerRepo;
     }
 
 

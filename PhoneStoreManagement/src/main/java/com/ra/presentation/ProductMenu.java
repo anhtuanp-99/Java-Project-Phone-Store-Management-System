@@ -1,6 +1,8 @@
 package com.ra.presentation;
 
 import com.ra.model.Product;
+import com.ra.repository.IProductRepository;
+import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IProductService;
 import com.ra.service.impl.ProductService;
 import com.ra.utils.InputUtils;
@@ -12,7 +14,8 @@ public class ProductMenu {
     private final IProductService productService;
 
     public ProductMenu() {
-        this.productService = new ProductService();
+        IProductRepository repo = new ProductRepository();
+        this.productService = new ProductService(repo);
     }
 
     public void show() {

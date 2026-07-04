@@ -1,6 +1,12 @@
 package com.ra.presentation;
 
 import com.ra.model.Invoice;
+import com.ra.repository.ICustomerRepository;
+import com.ra.repository.IInvoiceRepository;
+import com.ra.repository.IProductRepository;
+import com.ra.repository.impl.CustomerRepository;
+import com.ra.repository.impl.InvoiceRepository;
+import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
 import com.ra.service.impl.InvoiceService;
 import com.ra.utils.InputUtils;
@@ -13,7 +19,10 @@ public class InvoiceMenu {
     private final IInvoiceService invoiceService;
 
     public InvoiceMenu() {
-        this.invoiceService = new InvoiceService();
+        IInvoiceRepository invoiceRepo = new InvoiceRepository();
+        ICustomerRepository customerRepo = new CustomerRepository();
+        IProductRepository productRepo = new ProductRepository();
+        this.invoiceService = new InvoiceService(customerRepo, productRepo, invoiceRepo);
     }
 
     public void show() {
