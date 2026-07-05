@@ -11,6 +11,7 @@ import com.ra.service.IInvoiceService;
 import com.ra.service.impl.InvoiceService;
 import com.ra.utils.InputUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class InvoiceMenu {
             System.out.println("\n--- Quản lí hóa đơn ---");
             System.out.println("[1] Xem danh sách hóa đơn");
             System.out.println("[2] Tạo hóa đơn bán hàng");
-            System.out.println("[3] Tìm kiếm hóa đơn theo tên khách hàng");
+            System.out.println("[3] Tìm kiếm hóa đơn");
             System.out.println("[4] Thống kê doanh thu");
             System.out.println("[0] Quay lại");
 
@@ -39,7 +40,7 @@ public class InvoiceMenu {
             switch (choice) {
                 case 1 -> showAll();
                 case 2 -> createInvoice();
-                case 3 -> searchInvoice();
+                case 3 -> searchMenu();
                 case 4 -> showRevenue();
                 case 0 -> { return; }
             }
@@ -92,7 +93,26 @@ public class InvoiceMenu {
 
     }
 
-    private void searchInvoice() {
+    private void searchMenu() {
+        while (true) {
+            System.out.println("\n-- Tìm kiếm hóa đơn --");
+            System.out.println("[1] Tìm kiếm theo tên");
+            System.out.println("[2] Tìm kiếm ngày tháng năm");
+            System.out.println("[0] Quay lại");
+
+            int choice = InputUtils.getIntRange("Chọn: ", 0, 2);
+
+            switch (choice) {
+                case 1 -> searchByName();
+                case 2 -> searchByDate();
+                case 0 -> { return; }
+            }
+        }
+
+
+    }
+
+    private void searchByName() {
         System.out.println("\n-- Tìm kiếm hóa đơn theo tên khách hàng --");
         String name = InputUtils.getString("Nhập tên khách hàng cần tìm: ");
         List<Invoice> results = invoiceService.searchByCustomerName(name);
@@ -105,6 +125,25 @@ public class InvoiceMenu {
         System.out.println("\n-- Kết quả tìm kiếm --");
         System.out.println("    Tìm thấy: " + results.size() + " hóa đơn");
         results.forEach(System.out::println);
+    }
+
+    private void searchByDate() {
+        System.out.println("\n-- Tìm kiếm hóa đơn theo ngày tháng năm --");
+        System.out.println("Định dạng ngày: dd/MM/yyyy");
+        LocalDate date = InputUtils.inputDate("Nhập ngày: ");
+
+        if (date == null) return;
+
+        List<Invoice> results = invoiceService.searchByDate(date);
+
+        if (results.isEmpty()) {
+            System.out.println("Không tìm thấy hóa đơn nào trong ngày " + date);
+        } else {
+            System.out.printf("Hóa đơn ngày %s: %n", date);
+            results.forEach(System.out::println);
+            System.out.printf("Tổng: %d hóa đơn %n", results.size());
+        }
+
     }
 
     private void showRevenue() {

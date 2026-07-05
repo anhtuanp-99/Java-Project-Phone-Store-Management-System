@@ -12,6 +12,7 @@ import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
 import com.ra.service.IProductService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -114,6 +115,14 @@ public class InvoiceService implements IInvoiceService {
                 .stream().filter(inv -> inv.getCustomerName()
                         .toLowerCase()
                         .contains(lowerName)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Invoice> searchByDate(LocalDate date) {
+        return invoiceRepo.findAll()
+                .stream()
+                .filter(inv -> inv.getCreatedAt().toLocalDate().equals(date))
+                .collect(Collectors.toList());
     }
 
     @Override

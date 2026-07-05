@@ -1,5 +1,8 @@
 package com.ra.utils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class InputUtils {
@@ -71,6 +74,23 @@ public class InputUtils {
             if (input.equals("Y")) return true;
             if (input.equals("N")) return false;
             System.out.println("Chỉ nhập Y hoặc N!");
+        }
+    }
+
+    public static LocalDate inputDate(String prompt) {
+        DateTimeFormatter inputFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        while (true) {
+            System.out.print(prompt + "(0 = hủy): ");
+            String input = scanner.nextLine().trim();
+
+            if (input.equals("0")) return null;
+
+            try {
+                return LocalDate.parse(input, inputFmt);
+            } catch (DateTimeParseException e) {
+                System.out.println("Sai định dạng. Vui lòng nhập dd/MM/yyyy");
+            }
         }
     }
 }

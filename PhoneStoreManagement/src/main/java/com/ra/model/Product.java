@@ -69,7 +69,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("ID: %d | %-30s | Hãng: %-10s | Giá: %,.0f USD | Tồn kho: %d",
+        return String.format("ID: %d | %-25s | Hãng: %-10s | Giá: %,.0f USD | Tồn kho: %d",
                 id, name, brand, price, stock);
     }
 }

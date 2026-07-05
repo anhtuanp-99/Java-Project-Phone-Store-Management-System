@@ -73,11 +73,12 @@ public class ProductMenu {
 
     private void updateProduct() {
         System.out.println("\n--- Chỉnh sửa sản phẩm ---");
-        int id = InputUtils.getInt("Nhập id sản phẩm cần sửa: ");
+        int id = InputUtils.getInt("Nhập ID sản phẩm cần sửa: ");
         try {
             Product product = productService.findById(id);
             System.out.println();
-            System.out.println("Thông tin hiện tại:" + product);
+            System.out.println("Thông tin hiện tại: ");
+            System.out.println(product);
             System.out.println("\n-- Chọn thuộc tính cần sửa --");
             System.out.println("[1]. Tên sản phẩm");
             System.out.println("[2]. Hãng sản phẩm");
@@ -108,7 +109,8 @@ public class ProductMenu {
         int id = InputUtils.getInt("Nhập id sản phẩm cần xóa: ");
         try {
             Product  product = productService.findById(id);
-            System.out.println("Sản phẩm tìm thấy: " + product);
+            System.out.println("Sản phẩm tìm thấy: ");
+            System.out.println(product);
             if (InputUtils.getConfirmation("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
                 if (productService.delete(id)) {
                     System.out.println(" Đã xóa sản phẩm");
