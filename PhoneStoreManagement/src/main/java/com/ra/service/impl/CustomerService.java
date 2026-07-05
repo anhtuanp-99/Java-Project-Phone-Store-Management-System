@@ -3,7 +3,6 @@ package com.ra.service.impl;
 
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
-import com.ra.repository.impl.CustomerRepository;
 import com.ra.service.ICustomerService;
 import org.mindrot.jbcrypt.BCrypt;
 

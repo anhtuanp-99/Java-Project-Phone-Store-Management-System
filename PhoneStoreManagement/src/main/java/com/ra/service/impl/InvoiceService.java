@@ -6,11 +6,7 @@ import com.ra.model.Product;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
-import com.ra.repository.impl.CustomerRepository;
-import com.ra.repository.impl.InvoiceRepository;
-import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IInvoiceService;
-import com.ra.service.IProductService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

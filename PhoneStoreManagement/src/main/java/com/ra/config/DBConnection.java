@@ -13,9 +13,9 @@ import java.io.InputStream;
  */
 public class DBConnection {
 
-    private static String url;
-    private static String username;
-    private static String password;
+    private static final String url;
+    private static final String username;
+    private static final String password;
 
     static {
         try (InputStream input = DBConnection.class.getClassLoader()
@@ -35,14 +35,14 @@ public class DBConnection {
     }
 
 
-    public static boolean testConnection() {
+    public static void testConnection() {
         // try-with-resources tự động đóng Connection sau khi dùng
         try (Connection conn = getConnection()) {
-            System.out.println("Kết nối PostgreSQL thành công!");
-            return true;
+            System.out.println("Kết nối Database thành công!");
+
         } catch (SQLException e) {
-            System.err.println("Kết nối thất bại: " + e.getMessage());
-            return false;
+            System.err.println("Kết nối Database thất bại: " + e.getMessage());
+
         }
     }
 }

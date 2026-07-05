@@ -2,7 +2,6 @@ package com.ra.service.impl;
 
 import com.ra.model.Product;
 import com.ra.repository.IProductRepository;
-import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IProductService;
 
 import java.util.List;

@@ -114,7 +114,7 @@ public class ProductMenu {
             if (InputUtils.getConfirmation("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
                 if (productService.delete(id)) {
                     System.out.println(" Đã xóa sản phẩm");
-                };
+                }
             } else {
                 System.out.println("Đã hủy thao tác xóa");
             }
