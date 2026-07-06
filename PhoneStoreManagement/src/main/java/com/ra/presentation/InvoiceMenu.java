@@ -149,45 +149,44 @@ public class InvoiceMenu {
     private void showRevenue() {
         while (true) {
             System.out.println("\n-- Thống kê doanh thu --");
-            System.out.println("1. Theo ngày");
-            System.out.println("2. Theo tháng");
-            System.out.println("3. Theo năm");
+            System.out.println("1. Theo từng ngày đã kinh doanh");
+            System.out.println("2. Theo từng tháng đã kinh doanh");
+            System.out.println("3. Theo từng năm đã kinh doanh");
             System.out.println("0. Quay lại");
 
             int choice = InputUtils.getIntRange("Chọn: ", 0, 3);
 
             switch (choice) {
-                case 1 -> {
-                    int day = InputUtils.getIntRange("Chọn ngày (1-31): ", 1, 31);
-                    int month = InputUtils.getIntRange("Chọn tháng (1-12): ", 1, 12);
-                    int year = InputUtils.getInt("Chọn năm: ");
-
-                    double revenue = invoiceService.revenueByDay(day, month, year);
-
-                    System.out.printf("Doanh thu ngày %d/%d/%d: %,.0f USD %n", day, month, year, revenue);
-
-                }
-
-                case 2 -> {
-                    int month = InputUtils.getIntRange("Chọn tháng (1-12): ", 1, 12);
-                    int year = InputUtils.getInt("Chọn năm: ");
-
-                    double revenue = invoiceService.revenueByMonth(month, year);
-
-                    System.out.printf("Doanh thu tháng %d/%d: %,.0f USD %n", month, year, revenue);
-                }
-
-                case 3 -> {
-                    int year = InputUtils.getInt("Chọn năm: ");
-
-                    double revenue = invoiceService.revenueByYear(year);
-
-                    System.out.printf("Doanh thu năm %d: %,.0f USD %n", year, revenue);
-                }
-
+                case 1 -> printRevenue(invoiceService.revenueGroupByDay(),
+                        "NGÀY", "Thống kê doanh thu theo ngày");
+                case 2 -> printRevenue(invoiceService.revenueGroupByMonth(),
+                        "THÁNG", "Thống kê doanh thu theo tháng");
+                case 3 -> printRevenue(invoiceService.revenueGroupByYear(),
+                        "NĂM", "Thống kê doanh thu theo năm");
                 case 0 -> { return; }
             }
         }
+    }
+
+    private void printRevenue(
+            java.util.Map<String, Double> data,
+            String colHeader,
+            String title) {
+        if (data.isEmpty()) {
+            System.out.println("Chưa có dữ liệu doanh thu");
+            return;
+        }
+
+        System.out.printf("%-13s | %15s%n", colHeader, " DOANH THU (USD)");
+
+        double total = 0;
+        for (var entry : data.entrySet()) {
+            System.out.printf("%-13s | %,15.2f %n",
+                    entry.getKey(), entry.getValue());
+            total += entry.getValue();
+        }
+
+        System.out.printf("%-13s | %,15.2f %n", "TỔNG CỘNG", total);
     }
 
 }

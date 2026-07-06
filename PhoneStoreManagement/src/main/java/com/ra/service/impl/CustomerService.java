@@ -6,8 +6,13 @@ import com.ra.repository.ICustomerRepository;
 import com.ra.service.ICustomerService;
 import org.mindrot.jbcrypt.BCrypt;
 
-
 import java.util.List;
+
+/*
+ * BCrypt — thư viện hash password 1 chiều.
+ * hashpw()      → hash plain text thành chuỗi BCrypt
+ * checkpw()     → so sánh plain text với hash (không giải mã, chỉ so sánh)
+ */
 
 public class CustomerService implements ICustomerService {
 
@@ -55,8 +60,10 @@ public class CustomerService implements ICustomerService {
         return customerRepo.findByEmail(email);
     }
 
+
     @Override
     public boolean save(Customer customer) {
+        // Validation
         if (customer.getName() == null || customer.getName().isBlank()){
             throw new RuntimeException("Tên khách hàng không được để trống!");
         }
@@ -67,7 +74,14 @@ public class CustomerService implements ICustomerService {
             throw new RuntimeException("Email đã tồn tại trong hệ thống");
         }
 
-        // hash password trước khi lưu xuống Database
+        /*
+         * Hash password trước khi lưu xuống DB.
+         * BCrypt.hashpw(password, BCrypt.gensalt()):
+         * - gensalt() tạo ra một "salt" ngẫu nhiên
+         * - hashpw() kết hợp password + salt → tạo hash
+         * Mỗi lần gọi gensalt() cho kết quả khác nhau →
+         * cùng 1 password nhưng hash mỗi lần sẽ khác nhau (bảo mật hơn).
+         */
         String hashedPassword = BCrypt.hashpw(customer.getPassword(), BCrypt.gensalt());
         customer.setPassword(hashedPassword);
         customer.setRole("CUSTOMER");

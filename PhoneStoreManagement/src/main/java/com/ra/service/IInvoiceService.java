@@ -1,11 +1,12 @@
 package com.ra.service;
 
 import com.ra.model.Invoice;
-import com.ra.model.InvoiceDetail;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 public interface IInvoiceService {
     // Lấy toàn bộ danh sách hóa đơn JOIN với CUSTOMER
@@ -20,15 +21,17 @@ public interface IInvoiceService {
     // Tìm kiếm hóa đơn theo tên khách hàng
     List<Invoice> searchByCustomerName(String name);
 
-
+    // Tìm kiếm theo ngày tháng năm
     List<Invoice> searchByDate(LocalDate date);
 
-    // Thống kê doanh thu theo ngày tháng năm cụ thể
-    double revenueByDay(int day, int month, int year);
+    List<Invoice> searchByMonthYear(int month, int year);
 
-    // Thống kê doanh thu theo tháng + năm
-    double revenueByMonth(int month, int year);
+    List<Invoice> searchByDateRange(LocalDate form, LocalDate to);
 
-    // Thống kê doanh thu theo năm
-    double revenueByYear(int year);
+
+    // Key = ngày/tháng/năm, Value = tổng doanh thu
+    Map<String, Double> revenueGroupByDay();
+    Map<String, Double> revenueGroupByMonth();
+    Map<String, Double> revenueGroupByYear();
+
 }

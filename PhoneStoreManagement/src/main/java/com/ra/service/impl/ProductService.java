@@ -11,6 +11,7 @@ public class ProductService implements IProductService {
 
     private final IProductRepository productRepo;
 
+    // Khởi tạo implementation cụ thể ở constructor
     public ProductService(IProductRepository productRepo){
         this.productRepo = productRepo;
     }
@@ -21,9 +22,10 @@ public class ProductService implements IProductService {
         return productRepo.findAll();
     }
 
+
     @Override
     public Product findById(int id) {
-        Product product = productRepo.findId(id);
+        Product product = productRepo.findId(id); //Validation
         if (product == null){
             throw new RuntimeException("Không tìm thấy sản phẩm với ID " + id);
         }
@@ -33,6 +35,7 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean save(Product product) {
+        // Validation đầu vào trước khi lưu xuống DB
         if (product.getName() == null || product.getName().isBlank()){
             throw new RuntimeException("Tên sản phẩm không được để trống!");
         }
@@ -64,17 +67,18 @@ public class ProductService implements IProductService {
         return productRepo.delete(id);
     }
 
+    // Tìm kiếm brand, gần đúng, không phân biệt hoa thường
     @Override
-    public List<Product> searchByNameOrBrand(String keyword) {
-        String lowerKeyWord = keyword.toLowerCase().trim();
+    public List<Product> searchByBrand(String brand) {
+        String keyword = brand.toLowerCase().trim();
 
         return productRepo.findAll()
                 .stream()
-                .filter(p -> p.getName().toLowerCase().contains(lowerKeyWord) ||
-                        p.getBrand().toLowerCase().contains(lowerKeyWord))
+                .filter(p -> p.getBrand().toLowerCase().contains(keyword))
                 .collect(Collectors.toList());
     }
 
+    // Lọc theo khoảng giá
     @Override
     public List<Product> filterByPriceRange(double minPrice, double maxPrice) {
         if (minPrice > maxPrice) {
@@ -84,6 +88,18 @@ public class ProductService implements IProductService {
         return productRepo.findAll()
                 .stream()
                 .filter(p -> p.getPrice() >= minPrice && p.getPrice() <= maxPrice)
+                .collect(Collectors.toList());
+    }
+
+    // Tìm theo tên và chỉ lấy sản phẩm còn hàng (stock > 0)
+    @Override
+    public List<Product> searchByNameInStock(String name) {
+        String keyword = name.toLowerCase().trim();
+
+        return productRepo.findAll()
+                .stream()
+                .filter(p -> p.getName().toLowerCase().contains(keyword)
+                        && p.getStock() > 0)
                 .collect(Collectors.toList());
     }
 

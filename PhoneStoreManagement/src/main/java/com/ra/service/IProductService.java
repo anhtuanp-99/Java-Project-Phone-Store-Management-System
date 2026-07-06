@@ -21,7 +21,10 @@ public interface IProductService {
     boolean delete(int id);
 
     // Tìm kiếm theo tên hoặc theo hãng
-    List<Product> searchByNameOrBrand(String keyword);
+    List<Product> searchByNameInStock(String name);
+
+    // Tìm kiếm theo hãng
+    List<Product> searchByBrand(String brand);
 
     // Lọc theo khoảng giá
     List<Product> filterByPriceRange(double minPrice, double maxPrice);

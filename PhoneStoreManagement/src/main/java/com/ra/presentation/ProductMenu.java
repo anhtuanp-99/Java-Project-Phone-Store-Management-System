@@ -25,19 +25,21 @@ public class ProductMenu {
             System.out.println("[2] Thêm sản phẩm");
             System.out.println("[3] Chỉnh sửa sản phẩm");
             System.out.println("[4] Xóa sản phẩm");
-            System.out.println("[5] Tìm kiếm theo tên/hãng");
+            System.out.println("[5] Tìm kiếm theo Brand");
             System.out.println("[6] Lọc theo khoảng giá");
+            System.out.println("[7] Tìm kiếm theo tên + còn hàng");
             System.out.println("[0] Quay lại");
 
-            int choice = InputUtils.getIntRange("Chọn: ", 0, 6);
+            int choice = InputUtils.getIntRange("Chọn: ", 0, 7);
 
             switch (choice) {
                 case 1 -> showAll();
                 case 2 -> addProduct();
                 case 3 -> updateProduct();
                 case 4 -> deleteProduct();
-                case 5 -> searchProduct();
+                case 5 -> searchByBrand();
                 case 6 -> filterByPrice();
+                case 7 -> searchByNameInStock();
                 case 0 -> { return; }
             }
         }
@@ -124,14 +126,14 @@ public class ProductMenu {
 
     }
 
-    private void searchProduct() {
-        System.out.println("\n--- Tìm điện thoại theo tên sản phẩm hoặc tên nhãn hàng ---");
-        String keyword = InputUtils.getString("Nhập tên hoặc hãng cần tìm: ");
+    private void searchByBrand() {
+        System.out.println("\n--- Tìm điện thoại theo Brand ---");
+        String brand = InputUtils.getString("Nhập tên hãng cần tìm: ");
 
-        List<Product> results = productService.searchByNameOrBrand(keyword);
+        List<Product> results = productService.searchByBrand(brand);
 
         if (results.isEmpty()) {
-            System.out.println("Không tìm thấy sản phẩm liên quan đến '" + keyword + "'");
+            System.out.println("Không tìm thấy sản phẩm liên quan đến hãng '" + brand + "'");
         } else {
             System.out.println("\nKết quả tìm kiếm (" + results.size() + " sản phẩm): ");
             results.forEach(System.out::println);
@@ -154,6 +156,20 @@ public class ProductMenu {
             }
         } catch (RuntimeException e) {
             System.err.println("Lỗi: " + e.getMessage());
+        }
+    }
+
+    private void searchByNameInStock() {
+        System.out.println("\n--- Tìm điện thoại theo tên ---");
+        String name = InputUtils.getString("Nhập tên điện thoại cần tìm: ");
+
+        List<Product> results = productService.searchByNameInStock(name);
+
+        if (results.isEmpty()) {
+            System.out.println("Không tìm thấy sản phẩm liên quan đến '" + name + "'");
+        } else {
+            System.out.println("\nKết quả tìm kiếm (" + results.size() + " sản phẩm): ");
+            results.forEach(System.out::println);
         }
     }
 }

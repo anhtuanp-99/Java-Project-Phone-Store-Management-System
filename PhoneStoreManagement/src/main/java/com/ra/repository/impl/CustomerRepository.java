@@ -54,7 +54,7 @@ public class CustomerRepository implements ICustomerRepository {
                 if (rs.next()) return mapRow(rs);
             }
         } catch (SQLException e){
-            System.out.println("Lỗi không tìm thấy khách hàng ID: " + id + ": " + e.getMessage());
+            System.out.println("Lỗi khi tìm khách hàng ID: " + id + ": " + e.getMessage());
         }
         return null;
     }
@@ -70,7 +70,7 @@ public class CustomerRepository implements ICustomerRepository {
                 if (rs.next()) return mapRow(rs);
             }
         } catch (SQLException e){
-            System.out.println("Lỗi không tìm thấy khách hàng có email: " + email + ": " + e.getMessage());
+            System.out.println("Lỗi khi tìm khách hàng có email: " + email + ": " + e.getMessage());
         }
         return null;
     }

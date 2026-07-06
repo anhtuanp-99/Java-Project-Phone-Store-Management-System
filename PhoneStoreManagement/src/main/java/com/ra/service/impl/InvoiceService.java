@@ -11,6 +11,7 @@ import com.ra.service.IInvoiceService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InvoiceService implements IInvoiceService {
@@ -45,11 +46,24 @@ public class InvoiceService implements IInvoiceService {
 
     @Override
     public boolean createInvoice(int customerId, List<int[]> items) {
+        /*
+         * items = danh sách sản phẩm muốn mua.
+         * Mỗi phần tử là int[] gồm 2 giá trị: [productId, quantity]
+         * Quy trình tạo hóa đơn:
+         * 1. Kiểm tra khách hàng tồn tại
+         * 2. Kiểm tra từng sản phẩm: tồn tại + đủ tồn kho
+         * 3. Tính tổng tiền
+         * 4. Lưu vào bảng INVOICE → lấy invoiceId
+         * 5. Lưu từng dòng vào INVOICE_DETAILS
+         * 6. Trừ stock từng sản phẩm
+         */
+
         // kiểm tra khách hàng
         if (customerRepo.findById(customerId) == null) {
             throw new RuntimeException("Không tìm thấy khách hàng có ID " + customerId);
         }
 
+        // Kiểm tra sản phẩm và tính tổng tiền
         List<InvoiceDetail> details = new ArrayList<>();
         double totalAmount = 0;
 
@@ -70,6 +84,7 @@ public class InvoiceService implements IInvoiceService {
                 );
             }
 
+            // Tạo dòng chi tiết cho hóa đơn này
             InvoiceDetail detail = new InvoiceDetail();
             detail.setProductID(productId);
             detail.setProductName(product.getName());
@@ -104,6 +119,7 @@ public class InvoiceService implements IInvoiceService {
         return true;
     }
 
+    // Stream tìm kiếm theo tên khách hàng
     @Override
     public List<Invoice> searchByCustomerName(String name) {
         String lowerName = name.toLowerCase().trim();
@@ -113,6 +129,7 @@ public class InvoiceService implements IInvoiceService {
                         .contains(lowerName)).collect(Collectors.toList());
     }
 
+    // Stream tìm kiếm theo ngày tháng năm
     @Override
     public List<Invoice> searchByDate(LocalDate date) {
         return invoiceRepo.findAll()
@@ -121,39 +138,71 @@ public class InvoiceService implements IInvoiceService {
                 .collect(Collectors.toList());
     }
 
+    // Strem tìm kiếm theo tháng + năm
     @Override
-    public double revenueByDay(int day, int month, int year) {
-        return invoiceRepo.findAll()
-                .stream()
-                .filter(inv -> {
-                    var date = inv.getCreatedAt();
-                    return date.getDayOfMonth() == day
-                        && date.getMonthValue() == month
-                        && date.getYear() == year;
-                })
-                .mapToDouble(Invoice::getTotalAmount)
-                .sum();
-    }
-
-    @Override
-    public double revenueByMonth(int month, int year) {
+    public List<Invoice> searchByMonthYear(int month, int year) {
         return invoiceRepo.findAll()
                 .stream()
                 .filter(inv ->
-                                inv.getCreatedAt().getMonthValue() == month &&
-                                inv.getCreatedAt().getYear() == year
+                        inv.getCreatedAt().getMonthValue() == month &&
+                        inv.getCreatedAt().getYear() == year
                 )
-                .mapToDouble(Invoice::getTotalAmount)
-                .sum();
+                .collect(Collectors.toList());
+    }
+
+    // Tìm kiếm theo khoảng ngày [from, to]
+    // isAfter/isBefore không bao gồm đầu/cuối → dùng !isBefore và !isAfter
+    // để bao gồm cả ngày from và ngày to
+    @Override
+    public List<Invoice> searchByDateRange(LocalDate from, LocalDate to) {
+        return invoiceRepo.findAll()
+                .stream()
+                .filter(inv -> {
+                    LocalDate invoiceDate = inv.getCreatedAt().toLocalDate();
+                    return !invoiceDate.isBefore(from) && !invoiceDate.isAfter(to);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // Thống kê tổng doanh thu theo từng ngày đã có hóa đơn
+    @Override
+    public Map<String, Double> revenueGroupByDay() {
+        return invoiceRepo.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        inv -> inv.getCreatedAt()
+                                .toLocalDate()
+                                .format(java.time.format.DateTimeFormatter
+                                        .ofPattern("dd/MM/yyyy")),
+                        java.util.TreeMap::new,   // TreeMap → tự động sắp xếp theo key
+                        Collectors.summingDouble(Invoice::getTotalAmount)
+                ));
+    }
+
+    // thống kê theo từng tháng đã có hóa đơn
+    @Override
+    public Map<String, Double> revenueGroupByMonth() {
+        return invoiceRepo.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                   inv -> String.format("%02d/%d",
+                           inv.getCreatedAt().getMonthValue(),
+                           inv.getCreatedAt().getYear()),
+                        java.util.TreeMap::new,
+                        Collectors.summingDouble(Invoice::getTotalAmount)
+
+                ));
     }
 
     @Override
-    public double revenueByYear(int year) {
+    public Map<String, Double> revenueGroupByYear() {
         return invoiceRepo.findAll()
                 .stream()
-                .filter(inv -> inv.getCreatedAt().getYear() == year)
-                .mapToDouble(Invoice::getTotalAmount)
-                .sum();
+                .collect(Collectors.groupingBy(
+                inv -> String.valueOf(inv.getCreatedAt().getYear()),
+                        java.util.TreeMap::new,
+                        Collectors.summingDouble(Invoice::getTotalAmount)
+                ));
     }
 
 }
