@@ -11,7 +11,7 @@ public class ProductService implements IProductService {
 
     private final IProductRepository productRepo;
 
-    // Khởi tạo implementation cụ thể ở constructor
+    // Khởi tạo implementation cụ thể ở constructor | Service nhận Repository từ bên ngoài
     public ProductService(IProductRepository productRepo){
         this.productRepo = productRepo;
     }

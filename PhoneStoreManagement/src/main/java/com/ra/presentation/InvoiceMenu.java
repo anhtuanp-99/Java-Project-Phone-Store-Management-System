@@ -97,15 +97,19 @@ public class InvoiceMenu {
     private void searchMenu() {
         while (true) {
             System.out.println("\n-- Tìm kiếm hóa đơn --");
-            System.out.println("[1] Tìm kiếm theo tên");
-            System.out.println("[2] Tìm kiếm ngày tháng năm");
+            System.out.println("[1] Theo tên");
+            System.out.println("[2] Theo ngày tháng năm");
+            System.out.println("[3] Theo tháng/năm");
+            System.out.println("[4] Theo khoảng ngày");
             System.out.println("[0] Quay lại");
 
-            int choice = InputUtils.getIntRange("Chọn: ", 0, 2);
+            int choice = InputUtils.getIntRange("Chọn: ", 0, 4);
 
             switch (choice) {
                 case 1 -> searchByName();
                 case 2 -> searchByDate();
+                case 3 -> searchByMonthYear();
+                case 4 -> searchByDateRange();
                 case 0 -> { return; }
             }
         }
@@ -145,6 +149,45 @@ public class InvoiceMenu {
             System.out.printf("Tổng: %d hóa đơn %n", results.size());
         }
 
+    }
+
+    // Tìm theo tháng + năm
+    private void searchByMonthYear() {
+        int month = InputUtils.getIntRange("Nhập tháng (1-12): ", 1, 12);
+        int year  = InputUtils.getInt("Nhập năm: ");
+
+        List<Invoice> results = invoiceService.searchByMonthYear(month, year);
+
+        if (results.isEmpty()) {
+            System.out.printf("Không tìm thấy hóa đơn tháng %d/%d:%n", month, year);
+        } else {
+            System.out.printf("Hóa đơn tháng %d/%d:%n", month, year);
+            results.forEach(System.out::println);
+            System.out.printf("Tổng: %d hóa đơn %n", results.size());
+        }
+    }
+
+    // Tìm theo khoảng ngày
+    private void searchByDateRange() {
+        System.out.println("  Định dạng ngày: dd/MM/yyyy");
+        LocalDate from = InputUtils.inputDate("Từ ngày: ");
+        if (from == null) return;
+
+        LocalDate to = InputUtils.inputDate("Đến ngày: ");
+        if (to == null) return;
+
+        try {
+            List<Invoice> results = invoiceService.searchByDateRange(from, to);
+            if (results.isEmpty()) {
+                System.out.printf("Không tìm thấy hóa từ %s đến %s%n ", from, to);
+            } else {
+                System.out.printf("Hóa đơn từ %s đến %s:%n ", from, to);
+                results.forEach(System.out::println);
+                System.out.printf("Tổng: %d hóa đơn %n", results.size());
+            }
+        } catch (RuntimeException e) {
+            System.out.println("Lỗi: " + e.getMessage());
+        }
     }
 
     private void showRevenue() {

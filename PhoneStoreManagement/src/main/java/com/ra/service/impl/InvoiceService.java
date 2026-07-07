@@ -155,6 +155,9 @@ public class InvoiceService implements IInvoiceService {
     // để bao gồm cả ngày from và ngày to
     @Override
     public List<Invoice> searchByDateRange(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new RuntimeException("Ngày bắt đầu không được sau ngày kết thúc.");
+        }
         return invoiceRepo.findAll()
                 .stream()
                 .filter(inv -> {

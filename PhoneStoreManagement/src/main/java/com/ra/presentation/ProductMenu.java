@@ -11,8 +11,9 @@ import java.util.List;
 
 public class ProductMenu {
 
-    private final IProductService productService;
+    private final IProductService productService; // Dependency Injection
 
+    // Presentation tạo dependency chain
     public ProductMenu() {
         IProductRepository repo = new ProductRepository();
         this.productService = new ProductService(repo);
