@@ -14,6 +14,7 @@ import com.ra.utils.InputUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InvoiceMenu {
 
@@ -169,7 +170,7 @@ public class InvoiceMenu {
     }
 
     private void printRevenue(
-            java.util.Map<String, Double> data,
+            Map<String, Double> data,
             String colHeader,
             String title) {
         if (data.isEmpty()) {
@@ -177,6 +178,7 @@ public class InvoiceMenu {
             return;
         }
 
+        System.out.println(title);
         System.out.printf("%-13s | %15s%n", colHeader, " DOANH THU (USD)");
 
         double total = 0;
