@@ -143,7 +143,7 @@ INVOICE_DETAILS (id, invoice_id → INVOICE, product_id → PRODUCT,
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/PhoneStoreManagement.git
+git clone https://github.com/anhtuanp-99/PhoneStoreManagement.git
 cd PhoneStoreManagement
 ```
 
