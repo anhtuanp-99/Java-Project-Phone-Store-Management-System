@@ -164,7 +164,7 @@ public class InvoiceRepository implements IInvoiceRepository {
             // Không nuốt lỗi ở đây — nếu nuốt thì Service không biết để rollback
             throw new RuntimeException("Lỗi INSERT invoice: " + e.getMessage());
         }
-        return 0;
+        return -1;
     }
 
     @Override

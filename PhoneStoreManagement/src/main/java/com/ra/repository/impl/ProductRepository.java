@@ -36,7 +36,7 @@ public class ProductRepository implements IProductRepository {
 
 
     @Override
-    public Product findId(int id) {
+    public Product findById(int id) {
         String sql = "SELECT id, name, brand, price, stock FROM product WHERE id = ?" ;
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){

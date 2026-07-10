@@ -1,5 +1,6 @@
 package com.ra.service.impl;
 
+import com.ra.config.DBConnection;
 import com.ra.model.Invoice;
 import com.ra.model.InvoiceDetail;
 import com.ra.model.Product;
@@ -8,6 +9,8 @@ import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
 import com.ra.service.IInvoiceService;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,24 +49,20 @@ public class InvoiceService implements IInvoiceService {
 
     @Override
     public boolean createInvoice(int customerId, List<int[]> items) {
-        /*
-         * items = danh sách sản phẩm muốn mua.
-         * Mỗi phần tử là int[] gồm 2 giá trị: [productId, quantity]
-         * Quy trình tạo hóa đơn:
-         * 1. Kiểm tra khách hàng tồn tại
-         * 2. Kiểm tra từng sản phẩm: tồn tại + đủ tồn kho
-         * 3. Tính tổng tiền
-         * 4. Lưu vào bảng INVOICE → lấy invoiceId
-         * 5. Lưu từng dòng vào INVOICE_DETAILS
-         * 6. Trừ stock từng sản phẩm
-         */
 
-        // kiểm tra khách hàng
+        // Bước 1: Validate đầu vào trước khi mở Transaction
         if (customerRepo.findById(customerId) == null) {
             throw new RuntimeException("Không tìm thấy khách hàng có ID " + customerId);
         }
+        if (items == null || items.isEmpty()) {
+            throw new RuntimeException("Hóa đơn không có sản phẩm nào");
+        }
 
-        // Kiểm tra sản phẩm và tính tổng tiền
+        /*
+            Bước 2: Chuẩn bị dữ liệu trước khi mở Transaction
+            Kiểm tra sản phẩm và tính tiền bên ngoài Transaction - giảm thời gian giữ Transaction
+            ( Transaction càng ngắn càng tốt )
+         */
         List<InvoiceDetail> details = new ArrayList<>();
         double totalAmount = 0;
 
@@ -71,12 +70,16 @@ public class InvoiceService implements IInvoiceService {
             int productId = item[0];
             int quantity = item[1];
 
-            Product product = productRepo.findId(productId);
+            if (quantity <= 0) {
+                throw new RuntimeException("Số lượng phải lớn hơn 0");
+            }
+
+            Product product = productRepo.findById(productId);
+
             if (product == null) {
                 throw new RuntimeException("Không tìm thấy sản phẩm có ID: " + productId);
             }
-
-            // kiểm tra tồn kho
+            // kiểm tra tồn kho có đáp ứng số lượng cần mua không
             if (product.getStock() < quantity) {
                 throw new RuntimeException(
                     String.format("Sản phẩm %s không đủ tồn kho. Còn: %d, Cần: %d", product.getName(),
@@ -92,31 +95,95 @@ public class InvoiceService implements IInvoiceService {
             detail.setUnitPrice(product.getPrice());
             details.add(detail);
 
-            totalAmount = totalAmount + quantity * product.getPrice();
+            totalAmount += quantity * product.getPrice();
         }
 
-        // lưu hóa đơn và lấy về id
-        Invoice invoice = new Invoice();
-        invoice.setCustomerId(customerId);
-        invoice.setTotalAmount(totalAmount);
+        /*
+            Bước 3: Mở Transaction, tất cả thao tác DB từ đây trở đi
+            dùng chung một Connection và chỉ được commit khi tất cả thành công
+            Try-with-resource đảm bảo conn luôn đóng khi ra khỏi khối try, dù commit hay rollback
+            hay có exception bất ngờ
+         */
 
-        int invoiceId = invoiceRepo.save(invoice);
+        try (Connection conn = DBConnection.getConnection()){
 
-        if (invoiceId == -1) {
-            throw new RuntimeException("Lỗi khi tạo hóa đơn!");
+            /*
+                Tắt autoCommit, mặc định mỗi SQL statement tự commit ngay
+                Sau khi tắt, các statement chỉ commit khi gọi conn.commit() tường minh
+             */
+            conn.setAutoCommit(false);
+
+            try {
+                // Bước 4a: INSERT vào bảng invoice lấy invoiceId
+                Invoice invoice = new Invoice();
+                invoice.setCustomerId(customerId);
+                invoice.setTotalAmount(totalAmount);
+
+                int invoiceId = invoiceRepo.saveWithConnection(invoice, conn);
+                if (invoiceId == -1) {
+                    throw new RuntimeException("Không thể tạo hóa đơn!");
+                }
+
+                // Bước 4b: INSERT từng dòng vào INVOICE_DETAILS
+                for (InvoiceDetail detail : details) {
+                    detail.setInvoiceID(invoiceId);
+                    invoiceRepo.saveDetailWithConnection(detail, conn);
+                }
+
+                // Bước 4c: UPDATE stock từng sản phẩm
+                for (InvoiceDetail detail : details) {
+                    /*
+                        Đọc stock hiện tại trong cùng Transaction (dùng WithConnection)
+                        để tránh race-condition - stock có thể đã thay đổi
+                        kể từ lúc kiểm tra ở bước 2
+                     */
+
+                    Product current = productRepo.findByIdWithConnection(detail.getProductID(), conn);
+                    productRepo.updateStockWithConnection(
+                            detail.getProductID(),
+                            current.getStock() - detail.getQuantity(),
+                            conn
+                    );
+                }
+
+                /*
+                    Bước 5: COMMIT - chỉ chạy đến đây nếu tất cả bước trên thành công
+                    Lúc này tất cả thay đổi mới thực sự được lưu vào DB
+                 */
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+            /*
+                Bước 6: ROLLBACK, bất kì exception nào (từ Repository hay logic) đều khiến
+                toàn bộ Transaction bị hủy
+                DB trở về trạng thái trước khi bắt đầu - sạch hoàn toàn
+             */
+                try {
+                    conn.rollback();
+                    System.out.println("    Đã rollback Transaction do lỗi: " + e.getMessage());
+                } catch (SQLException rollbackEx) {
+                    System.out.println("    Lỗi khi rollback: " + rollbackEx.getMessage());
+                }
+                // Ném lại exception gốc để Presentation hiển thị cho người dùng
+                throw new RuntimeException(e.getMessage());
+
+            } finally {
+                /*
+                    Bước 7: Khôi phục autoCommit về true sau khi Transaction kết thúc
+                    Quan trọng vì Connection có thể được tái sử dụng sau này
+                    nếu không reset thì các thao tác tiếp theo cũng không tự commit
+                 */
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    System.out.println("    Lỗi khi reset autoCommit: " + e.getMessage());
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi khi kết nối database: " + e.getMessage());
         }
 
-        // lưu chi tiết và trừ stock
-        for (InvoiceDetail detail : details) {
-            detail.setInvoiceID(invoiceId);
-
-            invoiceRepo.saveDetail(detail);
-
-            // stock mới = stock cũ - số lượng mua
-            Product product = productRepo.findId(detail.getProductID());
-            productRepo.updateStock(detail.getProductID(), product.getStock() - detail.getQuantity());
-        }
-        return true;
     }
 
     // Stream tìm kiếm theo tên khách hàng
