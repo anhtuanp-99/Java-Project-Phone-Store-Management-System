@@ -1,6 +1,8 @@
 package com.ra.repository;
 
 import com.ra.model.Product;
+
+import java.sql.Connection;
 import java.util.List;
 
 // Interface định nghĩa các thao với bảng PRODUCT trong database
@@ -25,4 +27,7 @@ public interface IProductRepository {
     // Cập nhật riêng số lượng tồn kho (dùng khi tạo hóa đơn)
     boolean updateStock(int productId, int newStock);
 
+    boolean updateStockWithConnection(int productId, int newStock, Connection conn);
+
+    Product findByIdWithConnection(int id, Connection conn);
 }

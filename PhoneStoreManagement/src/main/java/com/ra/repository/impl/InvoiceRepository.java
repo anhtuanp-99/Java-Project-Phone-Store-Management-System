@@ -148,4 +148,38 @@ public class InvoiceRepository implements IInvoiceRepository {
         return list;
     }
 
+    @Override
+    public int saveWithConnection(Invoice invoice, Connection conn) {
+        String sql = "INSERT INTO invoice(customer_id, total_amount) VALUES (?, ?) RETURNING id";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, invoice.getCustomerId());
+            stmt.setDouble(2, invoice.getTotalAmount());
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            // Ném lại exception để Service bắt và rollback
+            // Không nuốt lỗi ở đây — nếu nuốt thì Service không biết để rollback
+            throw new RuntimeException("Lỗi INSERT invoice: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean saveDetailWithConnection(InvoiceDetail detail, Connection conn) {
+        String sql = "INSERT INTO invoice_details(invoice_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, detail.getInvoiceID());
+            stmt.setInt(2, detail.getProductID());
+            stmt.setInt(3, detail.getQuantity());
+            stmt.setDouble(4, detail.getUnitPrice());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            // Ném lại để Service rollback
+            throw new RuntimeException("Lỗi INSERT invoice_details: " + e.getMessage());
+        }
+    }
+
 }

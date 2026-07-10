@@ -127,4 +127,36 @@ public class ProductRepository implements IProductRepository {
         }
     }
 
+    @Override
+    public Product findByIdWithConnection(int id, Connection conn) {
+        String sql = "SELECT * FROM product WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()){
+                Product p = new Product();
+                p.setId(rs.getInt("id"));
+                p.setName(rs.getString("name"));
+                p.setBrand(rs.getString("brand"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                return p;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi SELECT product: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean updateStockWithConnection(int productId, int newStock, Connection conn) {
+        String sql = "UPDATE product SET stock = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, newStock);
+            stmt.setInt(2, productId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi UPDATE stock: " + e.getMessage());
+        }
+    }
+
+
 }
