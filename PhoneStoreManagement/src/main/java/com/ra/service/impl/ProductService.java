@@ -1,5 +1,8 @@
 package com.ra.service.impl;
 
+import com.ra.exception.ForeignKeyException;
+import com.ra.exception.NotFoundException;
+import com.ra.exception.ValidationException;
 import com.ra.model.Product;
 import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
@@ -31,7 +34,7 @@ public class ProductService implements IProductService {
     public Product findById(int id) {
         Product product = productRepo.findById(id); //Validation
         if (product == null){
-            throw new RuntimeException("Không tìm thấy sản phẩm với ID " + id);
+            throw NotFoundException.product(id); // dùng factory method
         }
 
         return product;
@@ -41,13 +44,13 @@ public class ProductService implements IProductService {
     public boolean save(Product product) {
         // Validation đầu vào trước khi lưu xuống DB
         if (product.getName() == null || product.getName().isBlank()){
-            throw new RuntimeException("Tên sản phẩm không được để trống!");
+            throw new ValidationException("Tên sản phẩm không được để trống!");
         }
         if (product.getPrice() < 0){
-            throw new RuntimeException("Giá sản phẩm không được âm!");
+            throw new ValidationException("Giá sản phẩm không được âm!");
         }
         if (product.getStock() < 0){
-            throw new RuntimeException("Số lượng tồn kho không được âm!");
+            throw new ValidationException("Số lượng tồn kho không được âm!");
         }
         return productRepo.save(product);
     }
@@ -58,7 +61,7 @@ public class ProductService implements IProductService {
         findById(product.getId()); // kiểm tra sản phẩm tồn tại trước khi update
 
         if (product.getPrice() < 0){
-            throw new RuntimeException("Giá sản phẩm không được âm!");
+            throw new ValidationException("Giá sản phẩm không được âm!");
         }
 
         return productRepo.update(product);
@@ -66,11 +69,9 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean delete(int id) {
-        findById(id); // kiểm tra sản phẩm tồn tại trước khi xóa
+        findById(id); // ném NotFoundException nếu không tìm thấy
         if (invoiceRepo.existsByProductId(id)) {
-            throw new RuntimeException(
-                    "Không thể xóa sản phẩm này vì có hóa đơn trong hệ thống. " +
-                    "Vui lòng đặt tồn kho về 0 nếu không muốn bán nữa");
+            throw ForeignKeyException.productHasInvoice();
         }
 
         return productRepo.delete(id);
@@ -91,7 +92,7 @@ public class ProductService implements IProductService {
     @Override
     public List<Product> filterByPriceRange(double minPrice, double maxPrice) {
         if (minPrice > maxPrice) {
-            throw new RuntimeException("Giá tối thiểu không được lớn hơn giá tối đa!");
+            throw new ValidationException("Giá tối thiểu không được lớn hơn giá tối đa!");
         }
 
         return productRepo.findAll()

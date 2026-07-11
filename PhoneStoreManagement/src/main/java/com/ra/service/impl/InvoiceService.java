@@ -1,6 +1,8 @@
 package com.ra.service.impl;
 
 import com.ra.config.DBConnection;
+import com.ra.exception.NotFoundException;
+import com.ra.exception.ValidationException;
 import com.ra.model.Invoice;
 import com.ra.model.InvoiceDetail;
 import com.ra.model.Product;
@@ -42,7 +44,7 @@ public class InvoiceService implements IInvoiceService {
     public int save(Invoice invoice) {
         int save = invoiceRepo.save(invoice);
         if (save == -1){
-            throw new RuntimeException("Thêm chi tiết hóa đơn thất bại!");
+            throw new ValidationException("Thêm chi tiết hóa đơn thất bại!");
         }
         return save;
     }
@@ -52,10 +54,10 @@ public class InvoiceService implements IInvoiceService {
 
         // Bước 1: Validate đầu vào trước khi mở Transaction
         if (customerRepo.findById(customerId) == null) {
-            throw new RuntimeException("Không tìm thấy khách hàng có ID " + customerId);
+            throw NotFoundException.customer(customerId);
         }
         if (items == null || items.isEmpty()) {
-            throw new RuntimeException("Hóa đơn không có sản phẩm nào");
+            throw new ValidationException("Hóa đơn không có sản phẩm nào");
         }
 
         /*
@@ -71,7 +73,7 @@ public class InvoiceService implements IInvoiceService {
             int quantity = item[1];
 
             if (quantity <= 0) {
-                throw new RuntimeException(
+                throw new ValidationException(
                         "Số lượng sản phẩm ID " + productId + " phải lớn hơn 0. Đã nhập: " + quantity
                 );
             }
@@ -79,8 +81,7 @@ public class InvoiceService implements IInvoiceService {
             Product product = productRepo.findById(productId);
 
             if (product == null) {
-                throw new RuntimeException("Không tìm thấy sản phẩm có ID: " + productId
-                );
+                throw NotFoundException.product(productId);
             }
             // kiểm tra tồn kho có đáp ứng số lượng cần mua không
             if (product.getStock() < quantity) {

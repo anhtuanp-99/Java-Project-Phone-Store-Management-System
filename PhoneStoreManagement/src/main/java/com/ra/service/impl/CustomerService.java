@@ -1,6 +1,10 @@
 package com.ra.service.impl;
 
 
+import com.ra.exception.DuplicateException;
+import com.ra.exception.ForeignKeyException;
+import com.ra.exception.NotFoundException;
+import com.ra.exception.ValidationException;
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
@@ -35,7 +39,7 @@ public class CustomerService implements ICustomerService {
     public Customer findById(int id) {
         Customer customer = customerRepo.findById(id);
         if (customer == null) {
-            throw new RuntimeException("Không tìm thấy khách hàng với ID: " + id);
+            throw NotFoundException.customer(id);
         }
         return customer;
     }
@@ -69,13 +73,13 @@ public class CustomerService implements ICustomerService {
     public boolean save(Customer customer) {
         // Validation
         if (customer.getName() == null || customer.getName().isBlank()){
-            throw new RuntimeException("Tên khách hàng không được để trống!");
+            throw new ValidationException("Tên khách hàng không được để trống!");
         }
         if (customer.getEmail() == null || customer.getEmail().isBlank()){
-            throw new RuntimeException("Email khách hàng không được để trống!");
+            throw new ValidationException("Email khách hàng không được để trống!");
         }
         if (customerRepo.findByEmail(customer.getEmail()) != null) {
-            throw new RuntimeException("Email đã tồn tại trong hệ thống");
+            throw DuplicateException.email(customer.getEmail()); // kiểm tra email trùng
         }
 
         /*
@@ -102,9 +106,7 @@ public class CustomerService implements ICustomerService {
     public boolean delete(int id) {
         findById(id);
         if (invoiceRepo.existsByCustomerId(id)) {
-            throw new RuntimeException(
-                    "Không thể xóa khách hàng này vì có hóa đơn trong hệ thống. " +
-                    "Vui lòng xóa hóa đơn liên quan trước");
+            throw ForeignKeyException.customerHasInvoice();
         }
         return customerRepo.delete(id);
     }

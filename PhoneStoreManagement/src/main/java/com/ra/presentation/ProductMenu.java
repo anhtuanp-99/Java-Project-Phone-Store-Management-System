@@ -1,5 +1,7 @@
 package com.ra.presentation;
 
+import com.ra.exception.ForeignKeyException;
+import com.ra.exception.NotFoundException;
 import com.ra.model.Product;
 import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
@@ -113,10 +115,12 @@ public class ProductMenu {
     private void deleteProduct() {
         System.out.println("\n--- Xóa sản phẩm ---");
         int id = InputUtils.getInt("Nhập id sản phẩm cần xóa: ");
+
         try {
             Product  product = productService.findById(id);
             System.out.println("Sản phẩm tìm thấy: ");
             System.out.println(product);
+
             if (InputUtils.getConfirmation("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
                 if (productService.delete(id)) {
                     System.out.println(" Đã xóa sản phẩm");
@@ -124,10 +128,17 @@ public class ProductMenu {
             } else {
                 System.out.println("Đã hủy thao tác xóa");
             }
-        } catch (RuntimeException e) {
-            System.out.println("Lỗi: " + e.getMessage());
-        }
 
+        } catch (NotFoundException e) {
+            // ID không tồn tại
+            System.out.println("-> " + e.getMessage());
+        } catch (ForeignKeyException e) {
+            // Sản phẩm đang có trong hóa đơn
+            System.out.println("-> " + e.getMessage());
+        } catch (RuntimeException e) {
+            // Các lỗi không xác định
+            System.out.println("-> " + e.getMessage());
+        }
     }
 
     private void searchByBrand() {
