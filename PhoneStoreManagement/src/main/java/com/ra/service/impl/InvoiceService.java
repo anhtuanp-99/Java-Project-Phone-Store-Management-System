@@ -71,19 +71,22 @@ public class InvoiceService implements IInvoiceService {
             int quantity = item[1];
 
             if (quantity <= 0) {
-                throw new RuntimeException("Số lượng phải lớn hơn 0");
+                throw new RuntimeException(
+                        "Số lượng sản phẩm ID " + productId + " phải lớn hơn 0. Đã nhập: " + quantity
+                );
             }
 
             Product product = productRepo.findById(productId);
 
             if (product == null) {
-                throw new RuntimeException("Không tìm thấy sản phẩm có ID: " + productId);
+                throw new RuntimeException("Không tìm thấy sản phẩm có ID: " + productId
+                );
             }
             // kiểm tra tồn kho có đáp ứng số lượng cần mua không
             if (product.getStock() < quantity) {
                 throw new RuntimeException(
-                    String.format("Sản phẩm %s không đủ tồn kho. Còn: %d, Cần: %d", product.getName(),
-                            product.getStock(), quantity)
+                    String.format("Sản phẩm %s không đủ tồn kho. Còn: %d, Cần: %d",
+                            product.getName(), product.getStock(), quantity)
                 );
             }
 
