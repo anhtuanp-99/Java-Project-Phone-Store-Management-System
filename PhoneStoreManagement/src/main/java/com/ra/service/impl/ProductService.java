@@ -1,6 +1,7 @@
 package com.ra.service.impl;
 
 import com.ra.model.Product;
+import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
 import com.ra.service.IProductService;
 
@@ -10,10 +11,13 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
 
     private final IProductRepository productRepo;
+    private final IInvoiceRepository invoiceRepo;
 
     // Khởi tạo implementation cụ thể ở constructor | Service nhận Repository từ bên ngoài
-    public ProductService(IProductRepository productRepo){
+    public ProductService(IProductRepository productRepo,
+                          IInvoiceRepository invoiceRepo){
         this.productRepo = productRepo;
+        this.invoiceRepo = invoiceRepo;
     }
 
 
@@ -25,7 +29,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Product findById(int id) {
-        Product product = productRepo.findId(id); //Validation
+        Product product = productRepo.findById(id); //Validation
         if (product == null){
             throw new RuntimeException("Không tìm thấy sản phẩm với ID " + id);
         }
@@ -62,8 +66,13 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean delete(int id) {
-
         findById(id); // kiểm tra sản phẩm tồn tại trước khi xóa
+        if (invoiceRepo.existsByProductId(id)) {
+            throw new RuntimeException(
+                    "Không thể xóa sản phẩm này vì có hóa đơn trong hệ thống. " +
+                    "Vui lòng đặt tồn kho về 0 nếu không muốn bán nữa");
+        }
+
         return productRepo.delete(id);
     }
 

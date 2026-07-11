@@ -27,4 +27,18 @@ public interface IInvoiceRepository {
 
     int saveWithConnection(Invoice invoice, Connection conn);
     boolean saveDetailWithConnection(InvoiceDetail detail, Connection conn);
+
+    /*
+       Kiểm tra khách hàng có hóa đơn nào không
+       Dùng trước khi xóa Customer, nếu true thì từ chối xóa
+       Dùng COUNT thay vì SELECT * vì chỉ cần biết có tồn tại hay không
+       Không cần lấy dữ liệu -> nhanh hơn
+     */
+    boolean existsByCustomerId(int customerId);
+
+    /*
+        Kiểm tra sản phẩm có nằm trong hóa đơn nào không
+        Dùng trước khi xóa Product
+     */
+    boolean existsByProductId(int productId);
 }

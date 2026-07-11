@@ -5,6 +5,7 @@ import com.ra.model.Invoice;
 import com.ra.model.InvoiceDetail;
 import com.ra.repository.IInvoiceRepository;
 
+import java.lang.classfile.instruction.DiscontinuedInstruction;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -182,4 +183,38 @@ public class InvoiceRepository implements IInvoiceRepository {
         }
     }
 
+    @Override
+    public boolean existsByCustomerId(int customerId) {
+        String sql = "SELECT COUNT(*) FROM invoice WHERE customer_id = ? LIMIT 1";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, customerId);
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // true nếu có ít nhất 1 hóa đơn
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi kiểm tra hóa đơn của khách hàng: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existsByProductId(int productId) {
+        String sql = "SELECT COUNT(*) FROM invoice_details WHERE product_id = ? LIMIT 1";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, productId);
+            try (ResultSet rs = stmt.executeQuery()){
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi kiểm tra sản phẩm trong chi tiết hóa đơn: " + e.getMessage());
+        }
+        return false;
+    }
 }

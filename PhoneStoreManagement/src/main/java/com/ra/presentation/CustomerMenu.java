@@ -2,7 +2,9 @@ package com.ra.presentation;
 
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
+import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.impl.CustomerRepository;
+import com.ra.repository.impl.InvoiceRepository;
 import com.ra.service.ICustomerService;
 import com.ra.service.impl.CustomerService;
 import com.ra.utils.InputUtils;
@@ -13,8 +15,9 @@ public class CustomerMenu {
     private final ICustomerService customerService;
 
     public CustomerMenu() {
-        ICustomerRepository repo  = new CustomerRepository();
-        this.customerService = new CustomerService(repo);
+        ICustomerRepository customerRepo  = new CustomerRepository();
+        IInvoiceRepository invoiceRepo = new InvoiceRepository();
+        this.customerService = new CustomerService(customerRepo, invoiceRepo);
     }
 
     public void show(){

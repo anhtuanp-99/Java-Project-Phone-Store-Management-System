@@ -3,6 +3,7 @@ package com.ra.service.impl;
 
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
+import com.ra.repository.IInvoiceRepository;
 import com.ra.service.ICustomerService;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -17,9 +18,12 @@ import java.util.List;
 public class CustomerService implements ICustomerService {
 
     private final ICustomerRepository customerRepo;
+    private final IInvoiceRepository invoiceRepo;
 
-    public CustomerService(ICustomerRepository customerRepo){
+    public CustomerService(ICustomerRepository customerRepo,
+                           IInvoiceRepository invoiceRepo){
         this.customerRepo = customerRepo;
+        this.invoiceRepo = invoiceRepo;
     }
 
     @Override
@@ -97,6 +101,11 @@ public class CustomerService implements ICustomerService {
     @Override
     public boolean delete(int id) {
         findById(id);
+        if (invoiceRepo.existsByCustomerId(id)) {
+            throw new RuntimeException(
+                    "Không thể xóa khách hàng này vì có hóa đơn trong hệ thống. " +
+                    "Vui lòng xóa hóa đơn liên quan trước");
+        }
         return customerRepo.delete(id);
     }
 }

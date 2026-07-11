@@ -1,7 +1,9 @@
 package com.ra.presentation;
 
 import com.ra.model.Product;
+import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
+import com.ra.repository.impl.InvoiceRepository;
 import com.ra.repository.impl.ProductRepository;
 import com.ra.service.IProductService;
 import com.ra.service.impl.ProductService;
@@ -15,8 +17,9 @@ public class ProductMenu {
 
     // Presentation tạo dependency chain
     public ProductMenu() {
-        IProductRepository repo = new ProductRepository();
-        this.productService = new ProductService(repo);
+        IProductRepository productRepo = new ProductRepository();
+        IInvoiceRepository invoiceRepo = new InvoiceRepository();
+        this.productService = new ProductService(productRepo, invoiceRepo);
     }
 
     public void show() {
