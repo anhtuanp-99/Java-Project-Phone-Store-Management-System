@@ -62,7 +62,7 @@ public class InvoiceRepository implements IInvoiceRepository {
                 Invoice inv = new Invoice();
                     inv.setId(rs.getInt("id"));
                     inv.setCustomerId(rs.getInt("customer_id"));
-                    inv.setCustomerName("customer_name");
+                    inv.setCustomerName(rs.getString("customer_name"));
                     inv.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     inv.setTotalAmount(rs.getDouble("total_amount"));
 
@@ -122,29 +122,35 @@ public class InvoiceRepository implements IInvoiceRepository {
     public List<InvoiceDetail> findDetailsByInvoiceId(int invoiceId) {
         List<InvoiceDetail> list = new ArrayList<>();
         String sql = """
-                     SELECT d.id, d.invoice_id, d.procduct_id,
-                            ,p.name AS product_name, d.quantity, d.unit_price
+                     SELECT d.id, d.invoice_id, d.product_id,
+                            p.name AS product_name,
+                            d.quantity,
+                            d.unit_price
                      FROM invoice_details d           
                      JOIN product p ON p.id = d.product_id
                      WHERE d.invoice_id = ?     
                      """;
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()){
+            ){
 
-            while (rs.next()){
-                InvoiceDetail d = new InvoiceDetail();
-                d.setId(rs.getInt("id"));
-                d.setInvoiceID(rs.getInt("invoice_id"));
-                d.setProductID(rs.getInt("product_id"));
-                d.setProductName(rs.getString("product_name"));
-                d.setQuantity(rs.getInt("quantity"));
-                d.setUnitPrice(rs.getDouble("unit_price"));
-                list.add(d);
+            stmt.setInt(1, invoiceId);
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    InvoiceDetail d = new InvoiceDetail();
+                    d.setId(rs.getInt("id"));
+                    d.setInvoiceID(rs.getInt("invoice_id"));
+                    d.setProductID(rs.getInt("product_id"));
+                    d.setProductName(rs.getString("product_name"));
+                    d.setQuantity(rs.getInt("quantity"));
+                    d.setUnitPrice(rs.getDouble("unit_price"));
+                    list.add(d);
+                }
             }
 
         } catch (SQLException e){
             System.out.println("Lỗi khi lấy chi tiết hóa đơn: " + e.getMessage());
+            e.printStackTrace();   // Nên in stack trace để debug
         }
         return list;
     }

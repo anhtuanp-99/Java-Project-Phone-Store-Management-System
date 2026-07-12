@@ -34,4 +34,6 @@ public interface IInvoiceService {
     Map<String, Double> revenueGroupByMonth();
     Map<String, Double> revenueGroupByYear();
 
+    // Xem danh sách hóa đơn chi tiết
+    Invoice findByIdWithDetails(int id);
 }

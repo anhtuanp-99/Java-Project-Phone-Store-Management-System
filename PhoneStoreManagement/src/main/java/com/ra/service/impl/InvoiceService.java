@@ -279,4 +279,23 @@ public class InvoiceService implements IInvoiceService {
                 ));
     }
 
+    @Override
+    public Invoice findByIdWithDetails(int id) {
+
+        // Bước 1: Tìm hóa đơn theo ID
+        Invoice invoice = invoiceRepo.findById(id);
+        if (invoice == null) {
+            throw NotFoundException.invoice(id);
+        }
+
+        /*
+            Bước 2: Load danh sách chi tiết từ bảng INVOICE_DETAILS
+            JOIN với bảng PRODUCT để lấy sản phẩm
+         */
+        List<InvoiceDetail> details = invoiceRepo.findDetailsByInvoiceId(id);
+        invoice.setDetails(details);
+
+        return invoice; // invoice đã có đầy đủ thông tin chi tiết
+    }
+
 }

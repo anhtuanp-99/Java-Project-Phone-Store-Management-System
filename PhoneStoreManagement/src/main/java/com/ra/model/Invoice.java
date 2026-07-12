@@ -1,6 +1,7 @@
 package com.ra.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Invoice {
     private int id;
@@ -8,6 +9,10 @@ public class Invoice {
     private String customerName;
     private LocalDateTime createdAt;
     private double totalAmount;
+
+    // Danh sách chi tiết các sản phẩm trong hóa đơn này
+    // Không lưu trong bảng INVOICE, nhưng cần để hiển thị đầy đủ thông tin
+    private List<InvoiceDetail> details;
 
     public Invoice(){}
 
@@ -59,6 +64,14 @@ public class Invoice {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public List<InvoiceDetail> getDetails() {
+        return details;
+    }
+    public void setDetails(List<InvoiceDetail> details) {
+        this.details = details;
+    }
+
 
 
     @Override

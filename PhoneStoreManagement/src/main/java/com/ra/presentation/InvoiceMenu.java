@@ -1,6 +1,8 @@
 package com.ra.presentation;
 
+import com.ra.exception.NotFoundException;
 import com.ra.model.Invoice;
+import com.ra.model.InvoiceDetail;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
 import com.ra.repository.IProductRepository;
@@ -32,17 +34,19 @@ public class InvoiceMenu {
             System.out.println("\n--- Quản lí hóa đơn ---");
             System.out.println("[1] Xem danh sách hóa đơn");
             System.out.println("[2] Tạo hóa đơn bán hàng");
-            System.out.println("[3] Tìm kiếm hóa đơn");
-            System.out.println("[4] Thống kê doanh thu");
+            System.out.println("[3] Xem chi tiết hóa đơn");
+            System.out.println("[4] Tìm kiếm hóa đơn");
+            System.out.println("[5] Thống kê doanh thu");
             System.out.println("[0] Quay lại");
 
-            int choice =  InputUtils.getIntRange("Chọn: ", 0, 4);
+            int choice =  InputUtils.getIntRange("Chọn: ", 0, 5);
 
             switch (choice) {
                 case 1 -> showAll();
                 case 2 -> createInvoice();
-                case 3 -> searchMenu();
-                case 4 -> showRevenue();
+                case 3 -> viewDetail();
+                case 4 -> searchMenu();
+                case 5 -> showRevenue();
                 case 0 -> { return; }
             }
         }
@@ -56,6 +60,69 @@ public class InvoiceMenu {
         }
         list.forEach(System.out::println);
         System.out.println("    Tổng: " + list.size() + " hóa đơn");
+    }
+
+    private void viewDetail() {
+        System.out.println("\n-- Xem chi tiết hóa đơn --");
+        int id = InputUtils.getInt("Nhập ID hóa đơn: ");
+
+        try {
+            Invoice invoice = invoiceService.findByIdWithDetails(id);
+            printInvoiceDetail(invoice);
+        } catch (NotFoundException e) {
+            System.out.println("-> " + e.getMessage());
+        }
+    }
+
+    private void printInvoiceDetail(Invoice invoice) {
+        String line  = "  " + "─".repeat(66);
+        String dline = "  " + "═".repeat(66);
+
+        System.out.println(dline);
+        System.out.printf("    HÓA ĐƠN #%d%n", invoice.getId());
+        System.out.println(dline);
+
+        // thông tin hóa đơn
+        System.out.printf("   %-14s: %s%n", "Khách hàng",
+                invoice.getCustomerName());
+        System.out.printf("   %-14s: %s%n", "Ngày xuất",
+                invoice.getCreatedAt().toLocalDate()
+                        .format(java.time.format.DateTimeFormatter
+                                .ofPattern("dd/MM/yyyy")));
+        System.out.println(line);
+
+        // Header bảng sản phẩm
+        System.out.printf("     %-4s %-30s %-5s %-12s %-12s%n",
+                "STT", "Sản phẩm", "SL", "Đơn giá", "Thành tiền");
+        System.out.println(line);
+
+        // dữ liệu từng dòng
+        List<InvoiceDetail> details = invoice.getDetails();
+
+        if (details == null || details.isEmpty()) {
+            System.out.println("    (Không có chi tiết sản phẩm)");
+        } else {
+            int stt = 1;
+            for (InvoiceDetail d : details) {
+                double totalAmount = d.getQuantity() * d.getUnitPrice();
+                System.out.printf("     %-4d %-30s %-5d %,-12.2f %,.2f%n",
+                        stt++,
+                        // Cắt tên nếu quá 30 ký tự để không vỡ bảng
+                        d.getProductName().length() > 28
+                                ? d.getProductName().substring(0, 27) + "..."
+                                : d.getProductName(),
+                        d.getQuantity(),
+                        d.getUnitPrice(),
+                        totalAmount);
+            }
+        }
+        System.out.println(line);
+
+        // dòng tổng cộng
+        System.out.println(invoice);
+        System.out.printf("   %51s %,.2f USD%n",
+                "TỔNG CỘNG:", invoice.getTotalAmount());
+        System.out.println(dline);
     }
 
     private void createInvoice() {
