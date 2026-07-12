@@ -43,5 +43,7 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/.maven-wrapper.jar
 
-### Database Configuration (QUAN TRỌNG) ###
+# Database configuration - sensitive information
 src/main/resources/db.properties
+*.properties
+!src/main/resources/application.properties   # giữ lại nếu bạn có file này
