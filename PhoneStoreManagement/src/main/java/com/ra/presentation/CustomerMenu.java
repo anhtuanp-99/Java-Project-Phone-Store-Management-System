@@ -1,5 +1,9 @@
 package com.ra.presentation;
 
+import com.ra.exception.DuplicateException;
+import com.ra.exception.ForeignKeyException;
+import com.ra.exception.NotFoundException;
+import com.ra.exception.ValidationException;
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
@@ -55,16 +59,18 @@ public class CustomerMenu {
         Customer customer = new Customer();
         System.out.println("\n--- Thêm mới khách hàng ---");
         customer.setName(InputUtils.getString("Họ tên: "));
-        customer.setPhone(InputUtils.getOptionalString("Số điện thoại: "));
-        customer.setEmail(InputUtils.getString("Email: "));
+        customer.setPhone(InputUtils.getPhone("Số điện thoại: "));
+        customer.setEmail(InputUtils.getEmail("Email: "));
         customer.setPassword(InputUtils.getString("Mật khẩu: "));
-        customer.setAddress(InputUtils.getOptionalString("Địa chỉ: "));
+        customer.setAddress(InputUtils.getOptionalString("Địa chỉ (có thể bỏ qua): "));
         try {
             if (customerService.save(customer)) {
                 System.out.println("Thêm khách hàng thành công");
             }
+        } catch (ValidationException | DuplicateException e) {
+            System.out.println("-> Lỗi: " + e.getMessage());
         } catch (RuntimeException e) {
-            System.out.println("Lỗi: " + e.getMessage());
+            System.out.println("-> Lỗi không xác định: " + e.getMessage());
         }
     }
 
@@ -73,7 +79,7 @@ public class CustomerMenu {
         int id = InputUtils.getInt("Nhập ID khách hàng cần sửa: ");
         try {
             Customer customer = customerService.findById(id);
-            System.out.println("\n-- Thông tin khách hàng hiện tại --");
+            System.out.println("\n-- Thông tin hiện tại --");
             System.out.println(customer);
             String name = InputUtils.getOptionalString("Họ tên mới (Enter để giữ nguyên): ");
             String phone = InputUtils.getOptionalString("Số điện thoại mới (Enter để giữ nguyên): ");
@@ -86,8 +92,10 @@ public class CustomerMenu {
             if (customerService.update(customer)) {
                 System.out.println("-> Cập nhật thành công!");
             }
+        } catch (NotFoundException | ValidationException e) {
+            System.out.println("-> Lỗi: " + e.getMessage());
         } catch (RuntimeException e) {
-            System.out.println("Lỗi: " + e.getMessage());
+            System.out.println("-> Lỗi không xác định: " + e.getMessage());
         }
 
     }
@@ -105,8 +113,12 @@ public class CustomerMenu {
             } else {
                 System.out.println("Đã hủy thao tác xóa");
             }
+        } catch (NotFoundException | ForeignKeyException e) {
+            // ID không tồn tại và Lỗi khóa ngoại
+            System.out.println("-> Lỗi: " + e.getMessage());
         } catch (RuntimeException e) {
-            System.out.println("Lỗi: " + e.getMessage());
+            // Các lỗi không xác định
+            System.out.println("-> Lỗi không xác định: " + e.getMessage());
         }
     }
 }

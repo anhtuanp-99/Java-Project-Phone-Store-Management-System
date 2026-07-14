@@ -1,5 +1,7 @@
 package com.ra.presentation;
 
+import com.ra.exception.DuplicateException;
+import com.ra.exception.ValidationException;
 import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
@@ -73,8 +75,8 @@ public class LoginMenu {
 
         Customer customer = new Customer();
         customer.setName(InputUtils.getString("Họ tên: "));
-        customer.setPhone(InputUtils.getString("Số điện thoại: "));
-        customer.setEmail(InputUtils.getString("Email: "));
+        customer.setPhone(InputUtils.getPhone("Số điện thoại: "));
+        customer.setEmail(InputUtils.getEmail("Email: "));
         customer.setPassword(InputUtils.getString("Mật khẩu: "));
         customer.setAddress(InputUtils.getOptionalString("Địa chỉ (không bắt buộc): "));
 
@@ -82,8 +84,10 @@ public class LoginMenu {
             if (customerService.save(customer)) {
                 System.out.println("Đăng kí thành công! Vui lòng đăng nhập");
             }
+        } catch (ValidationException | DuplicateException e) {
+            System.out.println("-> Lỗi: " + e.getMessage());
         } catch (RuntimeException e) {
-            System.err.println("Lỗi: " + e.getMessage());
+            System.err.println("-> Lỗi không xác định: " + e.getMessage());
         }
     }
 

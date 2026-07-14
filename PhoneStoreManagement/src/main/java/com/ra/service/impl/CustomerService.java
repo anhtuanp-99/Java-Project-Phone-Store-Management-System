@@ -9,6 +9,7 @@ import com.ra.model.Customer;
 import com.ra.repository.ICustomerRepository;
 import com.ra.repository.IInvoiceRepository;
 import com.ra.service.ICustomerService;
+import com.ra.utils.ValidationUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
@@ -71,15 +72,27 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public boolean save(Customer customer) {
-        // Validation
+        // Validation tên
         if (customer.getName() == null || customer.getName().isBlank()){
             throw new ValidationException("Tên khách hàng không được để trống!");
         }
-        if (customer.getEmail() == null || customer.getEmail().isBlank()){
-            throw new ValidationException("Email khách hàng không được để trống!");
+
+        // Validation email sai format
+        if (!ValidationUtils.isValidEmail(customer.getEmail())){
+            throw new ValidationException("Email không đúng định dạng!");
         }
+
+        // Validation phone sai format
+        if (customer.getPhone() != null && !customer.getPhone().isBlank()
+                && !ValidationUtils.isValidPhone(customer.getPhone())) {
+            throw new ValidationException(
+                    "Số điện thoại không đúng định dạng: " + customer.getPhone()
+            );
+        }
+
+        // Kiểm tra email trùng
         if (customerRepo.findByEmail(customer.getEmail()) != null) {
-            throw DuplicateException.email(customer.getEmail()); // kiểm tra email trùng
+            throw DuplicateException.email(customer.getEmail());
         }
 
         /*
@@ -99,6 +112,14 @@ public class CustomerService implements ICustomerService {
     @Override
     public boolean update(Customer customer) {
         findById(customer.getId()); // kiểm tra khách hàng tồn tại trước khi update
+
+        // Validate phone khi update nếu có nhập mới
+        if (customer.getPhone() != null && !customer.getPhone().isBlank()
+                && !ValidationUtils.isValidPhone(customer.getPhone())){
+            throw new ValidationException(
+                    "Số điện thoại không đúng định dạng: " + customer.getPhone()
+            );
+        }
         return customerRepo.update(customer);
     }
 

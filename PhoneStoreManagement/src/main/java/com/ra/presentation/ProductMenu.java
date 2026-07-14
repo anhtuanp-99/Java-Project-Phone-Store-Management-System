@@ -129,15 +129,12 @@ public class ProductMenu {
                 System.out.println("Đã hủy thao tác xóa");
             }
 
-        } catch (NotFoundException e) {
-            // ID không tồn tại
-            System.out.println("-> " + e.getMessage());
-        } catch (ForeignKeyException e) {
-            // Sản phẩm đang có trong hóa đơn
-            System.out.println("-> " + e.getMessage());
+        } catch (NotFoundException | ForeignKeyException e) {
+            // ID không tồn tại và Lỗi khóa ngoại
+            System.out.println("-> Lỗi: " + e.getMessage());
         } catch (RuntimeException e) {
             // Các lỗi không xác định
-            System.out.println("-> " + e.getMessage());
+            System.out.println("-> Lỗi không xác định" + e.getMessage());
         }
     }
 

@@ -93,4 +93,57 @@ public class InputUtils {
             }
         }
     }
+
+    public static String getEmail(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println("-> Email không được để trống");
+                continue;
+            }
+
+            /*
+             * Dùng ValidationUtils để kiểm tra định dạng.
+             * InputUtils không tự validate — chỉ gọi ValidationUtils.
+             * Đúng nguyên tắc Single Responsibility:
+             * InputUtils lo nhận input, ValidationUtils lo validate.
+             */
+            if (!ValidationUtils.isValidEmail(input)) {
+                System.out.println("-> Email không đúng định dạng. " +
+                        "Ví dụ đúng: abc@gmail.com");
+                continue;
+            }
+
+            return input;
+        }
+    }
+
+    /**
+     * Nhận số điện thoại từ người dùng, validate định dạng VN.
+     * Hỏi lại đến khi nhập đúng.
+     * @param prompt câu hỏi hiển thị
+     * @return số điện thoại hợp lệ
+     */
+    public static String getPhone(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println("-> Số điện thoại không được bỏ trống");
+                continue;
+            }
+
+            if (!ValidationUtils.isValidPhone(input)) {
+                System.out.println("-> Số điện thoại không đúng định dạng. " +
+                        "Ví dụ đúng: 091234567 (10 số, đầu 03/05/07/08/09)");
+                continue;
+            }
+
+            return input;
+        }
+    }
+
 }
