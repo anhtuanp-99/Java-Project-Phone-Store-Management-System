@@ -85,7 +85,7 @@ PhoneStoreManagement is a command-line interface (CLI) application designed for 
 PhoneStoreManagement/
 ├── src/main/java/com/ra/
 │   ├── config/
-│   │   └── DBContext.java                # Database connection
+│   │   └── DBConnection.java                # Database connection
 │   ├── model/
 │   │   ├── Customer.java                 # Maps to CUSTOMER table
 │   │   ├── Product.java                  # Maps to PRODUCT table
