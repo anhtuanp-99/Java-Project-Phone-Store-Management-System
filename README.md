@@ -32,25 +32,31 @@ PhoneStoreManagement is a command-line interface (CLI) application designed for 
 
 ### 📦 Product Management
 - View all products
-- Add / Edit / Delete products with confirmation
+- Add / Edit / Delete products with input confirmation
+- **FK check before delete** — refuses if product exists in any invoice
 - Search by **brand** (fuzzy, case-insensitive)
 - Filter by **price range**
-- Search by **name + in-stock** only
+- Search by **name + in-stock only**
 
 ### 👤 Customer Management
 - View all customers
 - Add / Edit / Delete customers
+- **FK check before delete** — refuses if customer has invoices
+- **Email format validation** — regex `xxx@xxx.xx`
+- **Phone format validation** — Vietnamese mobile numbers (10 digits, prefix 03/05/07/08/09)
 - Duplicate email detection (PostgreSQL `23505` constraint)
 
 ### 🧾 Invoice Management
 - Create invoices with multiple products
+- **JDBC Transaction** — all-or-nothing: INSERT invoice + INSERT details + UPDATE stock
 - Auto stock deduction after purchase
 - Stock availability check before confirming order
 - View all invoices
+- **View invoice detail** — line-by-line product breakdown with subtotals
 
 ### 🔍 Invoice Search
 - Search by **customer name** (fuzzy)
-- Search by **specific date**
+- Search by **specific date** (`dd/MM/yyyy`)
 - Search by **date range**
 
 ### 📊 Revenue Statistics
@@ -79,12 +85,12 @@ PhoneStoreManagement is a command-line interface (CLI) application designed for 
 PhoneStoreManagement/
 ├── src/main/java/com/ra/
 │   ├── config/
-│   │   └── DBContext.java            # Database connection
+│   │   └── DBContext.java                # Database connection
 │   ├── model/
-│   │   ├── Customer.java             # Maps to CUSTOMER table
-│   │   ├── Product.java              # Maps to PRODUCT table
-│   │   ├── Invoice.java              # Maps to INVOICE table
-│   │   └── InvoiceDetail.java        # Maps to INVOICE_DETAILS table
+│   │   ├── Customer.java                 # Maps to CUSTOMER table
+│   │   ├── Product.java                  # Maps to PRODUCT table
+│   │   ├── Invoice.java                  # Maps to INVOICE table
+│   │   └── InvoiceDetail.java            # Maps to INVOICE_DETAILS table
 │   ├── repository/
 │   │   ├── ICustomerRepository.java
 │   │   ├── IProductRepository.java
@@ -107,11 +113,18 @@ PhoneStoreManagement/
 │   │   ├── ProductMenu.java
 │   │   ├── CustomerMenu.java
 │   │   └── InvoiceMenu.java
+│   ├── exception/
+│   │   ├── NotFoundException.java        # Entity not found by ID
+│   │   ├── DuplicateException.java       # Unique constraint violation
+│   │   ├── InsufficientStockException.java # Stock not enough
+│   │   ├── ValidationException.java      # Invalid input format
+│   │   └── ForeignKeyException.java      # FK violation on delete
 │   ├── utils/
-│   │   └── InputUtils.java           # Safe Scanner wrapper
-│   └── Main.java                     # Entry point
+│   │   ├── InputUtils.java               # Safe Scanner wrapper
+│   │   └── ValidationUtils.java          # Email / phone regex validation
+│   └── Main.java                         # Entry point
 ├── src/main/resources/
-│   └── db.properties                 # DB connection config
+│   └── db.properties                     # DB connection config
 └── pom.xml
 ```
 
@@ -270,11 +283,16 @@ The application follows a strict **4-layer architecture**:
 
 - **Dependency Injection** via constructor — Service receives Repository from outside, not `new` inside
 - **Interface-based** — each layer depends on abstraction, not concrete implementation (DIP in SOLID)
+- **JDBC Transaction** — `createInvoice()` uses `setAutoCommit(false)` + `rollback()` to guarantee data consistency
+- **FK validation before delete** — checks related records before DELETE, returns friendly error instead of raw SQL exception
+- **Custom Exception hierarchy** — 5 domain-specific exceptions (`NotFoundException`, `DuplicateException`, `InsufficientStockException`, `ValidationException`, `ForeignKeyException`)
+- **Input validation at two layers** — `InputUtils` (UX: re-prompt immediately) + `Service` (business rule: throws exception)
 - **PreparedStatement** everywhere — prevents SQL Injection
 - **BCrypt** for password hashing — salt included, not reversible
 - **Java Stream API** for all collection processing — no arrays used
 - **try-with-resources** for all JDBC operations — no connection leaks
 - **`RETURNING id`** after INSERT — safely retrieves auto-generated PK
+- **Lazy loading** for invoice details — loaded only when viewing a specific invoice, not on `findAll()`
 
 ---
 
